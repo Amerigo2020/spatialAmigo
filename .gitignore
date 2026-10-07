@@ -25,3 +25,4 @@ node_modules/
 eval/sr3d/data/
 eval/sr3d/out/
 crates/spatialamigo-wasm/pkg-node/
+results/**/samples.jsonl
