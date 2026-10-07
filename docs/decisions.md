@@ -21,3 +21,14 @@ Decisions taken while building spatialAmigo autonomously. Each entry states the 
 * Implemented exactly as specified. The JSON Schema is strict (`additionalProperties: false`, `yaw` required, `front` and `viewpoint` optional) because the format is shared with motionAmigo and must only change with a version bump.
 * The Rust loader validates what the schema cannot express on its own: unique ids, finite numbers, strictly positive sizes, `front` with unit length (tolerance 1e-3) and a viewpoint whose viewing direction has a horizontal component.
 * Unknown JSON fields are ignored by the Rust reader (tolerant reader), the schema remains the strict contract. This keeps old binaries usable if motionAmigo adds optional fields in a later version.
+
+## D4. Relation semantics
+
+* Definitions follow the Sr3D generation rules from the ReferIt3D supplementary material (horizontal proximity, between, vertical proximity, support, allocentric) and make each hard threshold continuous. Full formulas in `docs/relations.md`.
+* Horizontal distance is the gap between top-view footprints plus 0.1 times the center distance. Footprint gap matches how people judge "close to the table"; the center term breaks ties when footprints overlap.
+* Closest and farthest are superlatives: their scores are normalized over all candidates of the target class with a soft min/max (`exp(-Δ/τ)`, τ = 0.15 m), so the winner always scores 1 and the runner-up's score shows the margin.
+* `under` is the support relation (target holds the anchor). Non-touching "below" is `below`. This keeps the user-requested family split (support: on, under; vertical: above, below) while staying compatible with Sr3D, where "supporting" and "below/under without contact" are different relations.
+* Directional relations use the four sections bounded by the anchor footprint diagonals (Sr3D allocentric sections) and a mild distance fall-off so the nearest object in a section wins.
+* Egocentric frames use the line of sight from the viewpoint to each anchor rather than the global viewing direction. Default frame `auto` is allocentric when the anchor has a front, otherwise egocentric.
+* Constraints combine with a product (AND). Anchor labels with several instances use the best anchor (existential reading).
+* No dependency on a linear algebra crate: the core only needs 2D convex polygon routines (clipping, hull, distance) that are short, exact and keep the WASM build small.
