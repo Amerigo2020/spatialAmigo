@@ -2,7 +2,9 @@
 
 **Resolve spatial referring expressions like "the mug left of the laptop" in 3D scenes, deterministically, fast and with a trace that explains every decision.**
 
-> Status: work in progress. This README is a skeleton and grows with each milestone.
+![spatialAmigo web demo: the trace explains why plant_1 is "the plant to the right of the tv"](docs/media/demo.gif)
+
+Web demo (Rust compiled to WebAssembly, three.js): `scripts/build_web.sh && python3 -m http.server -d web/dist 8000`, then open http://localhost:8000.
 
 ## Pitch
 
