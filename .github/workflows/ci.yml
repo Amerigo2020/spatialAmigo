@@ -1,0 +1,89 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+  RUSTFLAGS: -D warnings
+
+jobs:
+  rust:
+    name: Rust (fmt, clippy, test)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: cargo fmt
+        run: cargo fmt --all --check
+      - name: cargo clippy
+        run: cargo clippy --workspace --all-targets -- -D warnings
+      - name: cargo test
+        run: cargo test --workspace --exclude spatialamigo-py
+      - name: cargo doc
+        run: cargo doc --no-deps -p spatialamigo
+        env:
+          RUSTDOCFLAGS: -D warnings
+      - name: run examples
+        run: |
+          for ex in $(ls crates/spatialamigo/examples/*.rs 2>/dev/null | xargs -n1 basename | sed 's/\.rs$//'); do
+            cargo run -q -p spatialamigo --example "$ex"
+          done
+
+  python:
+    name: Python (wheel + pytest)
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+      - name: Build wheel
+        run: uvx maturin build --release --out dist
+      - name: Sync dev environment and test
+        run: |
+          uv sync
+          uv run maturin develop --release
+          uv run pytest -q
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wheel-${{ matrix.os }}
+          path: dist/*.whl
+          retention-days: 7
+
+  wasm:
+    name: WASM build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+      - uses: Swatinem/rust-cache@v2
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: wasm-pack
+      - name: Build (web target)
+        run: wasm-pack build crates/spatialamigo-wasm --release --target web --out-dir ../../web/pkg
+      - name: Smoke test (node target)
+        run: |
+          wasm-pack build crates/spatialamigo-wasm --release --target nodejs --out-dir pkg-node
+          node -e "const m=require('./crates/spatialamigo-wasm/pkg-node'); console.log('spatialamigo-wasm', m.version())"
