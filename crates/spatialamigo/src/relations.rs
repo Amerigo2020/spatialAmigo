@@ -215,6 +215,8 @@ pub struct Params {
     pub contact_sigma: f64,
     /// Softness of the sector boundaries for directional relations.
     pub sector_softness: f64,
+    /// Length scale (m) that smooths sector corners and the sign of a side.
+    pub sector_smoothing: f64,
     /// Distance (m) at which the directional score halves.
     pub direction_falloff: f64,
 }
@@ -230,7 +232,8 @@ impl Default for Params {
             touch_softness: 0.01,
             contact_sigma: 0.03,
             sector_softness: 0.15,
-            direction_falloff: 1.0,
+            sector_smoothing: 0.05,
+            direction_falloff: 2.0,
         }
     }
 }
@@ -446,32 +449,44 @@ pub fn egocentric_frame(anchor: &Obb, vp: &Viewpoint) -> DirectionalFrame {
 
 /// Directional relation (left/right/front/behind) of target w.r.t. anchor in `frame`.
 ///
-/// Uses the four sections of the anchor footprint split by its diagonals
-/// (Sr3D allocentric sections), softened with a logistic, times a distance
+/// The plane around the anchor footprint is split into four sections by the
+/// 45° lines through its corners: a point belongs to the side whose face it
+/// is farther outside of. Unlike sections bounded by the box diagonals, this
+/// keeps "left of the TV" meaningful for thin or elongated anchors. The
+/// section membership is softened with logistics and multiplied by a distance
 /// fall-off `1 / (1 + gap / direction_falloff)`.
 pub fn directional(t: &Obb, a: &Obb, rel: Relation, frame: &DirectionalFrame, p: &Params) -> PredicateValue {
     let r = t.center_xy() - a.center_xy();
-    let hf = a.extent_along(frame.front).max(1e-6);
-    let hl = a.extent_along(frame.left).max(1e-6);
-    let nu = r.dot(frame.front) / hf;
-    let nw = r.dot(frame.left) / hl;
-    let (main, cross) = match rel {
-        Relation::Front => (nu, nw),
-        Relation::Behind => (-nu, nw),
-        Relation::Left => (nw, nu),
-        Relation::Right => (-nw, nu),
+    let hf = a.extent_along(frame.front);
+    let hl = a.extent_along(frame.left);
+    let u = r.dot(frame.front);
+    let w = r.dot(frame.left);
+    // How far the target center lies outside the anchor's front/back faces and side faces.
+    let excess_front = u.abs() - hf;
+    let excess_left = w.abs() - hl;
+    // +1: clearly beside the anchor (left/right), -1: clearly in front or behind.
+    let lateral =
+        (excess_left - excess_front) / (excess_left.abs() + excess_front.abs() + p.sector_smoothing);
+    let (axis, coord) = match rel {
+        Relation::Front => (-lateral, u),
+        Relation::Behind => (-lateral, -u),
+        Relation::Left => (lateral, w),
+        Relation::Right => (lateral, -w),
         _ => (0.0, 0.0),
     };
-    let margin = (main - cross.abs()) / (main * main + cross * cross + 1e-9).sqrt();
-    let sector = sigmoid(margin / p.sector_softness);
+    let axis_term = sigmoid(axis / p.sector_softness);
+    let side = sigmoid(coord / p.sector_smoothing);
+    let sector = axis_term * side;
     let gap = polygon_distance(&t.footprint, &a.footprint);
     let falloff = 1.0 / (1.0 + gap / p.direction_falloff);
     PredicateValue::new(
         sector * falloff,
         &[
-            ("front_coord", nu),
-            ("left_coord", nw),
-            ("sector_margin", margin),
+            ("front_coord_m", u),
+            ("left_coord_m", w),
+            ("lateral_dominance", lateral),
+            ("axis", axis_term),
+            ("side", side),
             ("sector", sector),
             ("footprint_gap_m", gap),
             ("distance_falloff", falloff),

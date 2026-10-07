@@ -52,7 +52,7 @@ pub fn on(t: &Obb, a: &Obb) -> bool {
         && (t.z().lo - a.z().hi).abs() <= TOUCH
 }
 
-/// Section of the anchor (split by its footprint diagonals) that contains the target center.
+/// Section of the anchor (bounded by 45° lines through its footprint corners) that contains the target center.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Sector {
     /// +front
@@ -65,18 +65,21 @@ pub enum Sector {
     Right,
 }
 
-/// Sector of the target w.r.t. the anchor in `frame`, `None` if the target
-/// center lies inside the anchor footprint or exactly on a diagonal.
+/// Sector of the target w.r.t. the anchor in `frame` (sections bounded by the
+/// 45° lines through the footprint corners), `None` if the target center lies
+/// inside the anchor footprint or exactly on a boundary.
 pub fn sector(t: &Obb, a: &Obb, frame: &DirectionalFrame) -> Option<Sector> {
     if point_in_convex(t.center_xy(), &a.footprint) {
         return None;
     }
     let r = t.center_xy() - a.center_xy();
-    let u = r.dot(frame.front) / a.extent_along(frame.front);
-    let w = r.dot(frame.left) / a.extent_along(frame.left);
-    if (u.abs() - w.abs()).abs() < 1e-9 {
+    let u = r.dot(frame.front);
+    let w = r.dot(frame.left);
+    let eu = u.abs() - a.extent_along(frame.front);
+    let ew = w.abs() - a.extent_along(frame.left);
+    if (eu - ew).abs() < 1e-9 {
         None
-    } else if u.abs() > w.abs() {
+    } else if eu > ew {
         Some(if u > 0.0 { Sector::Front } else { Sector::Behind })
     } else {
         Some(if w > 0.0 { Sector::Left } else { Sector::Right })

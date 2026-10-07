@@ -97,20 +97,22 @@ Both directional families share one scoring function and differ only in the refe
 
 **Auto** (default in queries): allocentric if the anchor has a front, otherwise egocentric if the scene has a viewpoint. The trace records which frame was used.
 
-Sr3D splits the space around the anchor into four sections (front, back, left, right) and requires the target to lie in the right one. spatialAmigo uses the sections bounded by the anchor's footprint diagonals, so a long sofa has wide front and back sections:
+Sr3D splits the space around the anchor into four oriented sections (front, back, left, right) and requires the target to lie in the right one. spatialAmigo bounds the sections by the 45° lines through the corners of the anchor footprint: a point belongs to the side whose face it lies farther outside of. Sections bounded by the box diagonals would make "front" of a thin TV cover almost the whole half plane, so "the plant to the right of the TV" would fail for any plant not exactly beside the screen.
 
 ```
-r     = c(T) - c(A)
-u     = (r · f) / h_f(A)          h_f = half extent of F(A) along f (support function)
-w     = (r · l) / h_l(A)
-(p,q) = (u, w) for front, (-u, w) for behind, (w, u) for left, (-w, u) for right
-m     = (p - |q|) / sqrt(p² + q²)                 ∈ [-√2, 1], 0 on the diagonals
-sector  = σ(m / k)                                k = 0.15
-falloff = 1 / (1 + gap(F(T), F(A)) / d₀)         d₀ = 1.0 m
-directional = sector * falloff
+r      = c(T) - c(A)
+u      = r · f,   w = r · l                       (metric coordinates in the frame)
+e_f    = |u| - h_f(A),   e_l = |w| - h_l(A)       (how far outside the front/back and side faces)
+lat    = (e_l - e_f) / (|e_l| + |e_f| + ε)        ∈ (-1, 1): +1 beside, -1 in front or behind
+left   = σ( lat / k) · σ( w / ε)
+right  = σ( lat / k) · σ(-w / ε)
+front  = σ(-lat / k) · σ( u / ε)
+behind = σ(-lat / k) · σ(-u / ε)                  k = 0.15, ε = 0.05 m
+falloff = 1 / (1 + gap(F(T), F(A)) / d₀)          d₀ = 2.0 m
+directional = section * falloff
 ```
 
-The fall-off prefers the nearer object when two candidates fall into the same section, which matches how people use "the mug left of the laptop". Opposite relations exclude each other: `left + right ≤ 1` and `front + behind ≤ 1` hold for every configuration (property test).
+`h_f` and `h_l` are the half extents of the anchor footprint along `f` and `l` (support function, exact for any yaw). The fall-off prefers the nearer object when two candidates fall into the same section, which matches how people use "the mug left of the laptop". Opposite relations exclude each other: `left + right ≤ 1` and `front + behind ≤ 1` hold for every configuration (property test).
 
 ## Combining constraints
 
@@ -142,5 +144,5 @@ Checked with `proptest` in [`crates/spatialamigo/tests/properties.rs`](../crates
 | Output | crisp yes/no, used to synthesize unambiguous sentences | continuous score per candidate with features |
 | Thresholds | hard (epsilonGap, occupancy, overlap ratios) | logistic or Gaussian versions of the same thresholds |
 | Geometry | point clouds and axis-aligned boxes, Scan2CAD orientation for allocentric | oriented boxes with yaw, exact footprint polygons |
-| Allocentric sections | ratio of target points inside a section | target center in the diagonal sections, softened |
+| Allocentric sections | ratio of target points inside a section | target center in sections bounded by 45° lines through the footprint corners, softened |
 | Egocentric | not part of Sr3D | added, relative to `scene.viewpoint` |
