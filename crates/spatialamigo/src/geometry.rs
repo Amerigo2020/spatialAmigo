@@ -30,7 +30,7 @@ impl Vec2 {
     }
     /// Euclidean length.
     pub fn norm(self) -> f64 {
-        self.x.hypot(self.y)
+        (self.x * self.x + self.y * self.y).sqrt()
     }
     /// Unit vector, or `None` for (near) zero vectors.
     pub fn normalized(self) -> Option<Vec2> {
@@ -158,6 +158,64 @@ impl Obb {
     /// Half extent of the footprint along a unit direction `d` (support function).
     pub fn extent_along(&self, d: Vec2) -> f64 {
         d.dot(self.axis_x).abs() * self.half[0] + d.dot(self.axis_y).abs() * self.half[1]
+    }
+
+    /// Distance from `p` to the footprint rectangle (0 inside). O(1).
+    pub fn footprint_point_distance(&self, p: Vec2) -> f64 {
+        self.footprint_point_distance_sq(p).sqrt()
+    }
+
+    fn footprint_point_distance_sq(&self, p: Vec2) -> f64 {
+        let d = p - self.center_xy();
+        let dx = (d.dot(self.axis_x).abs() - self.half[0]).max(0.0);
+        let dy = (d.dot(self.axis_y).abs() - self.half[1]).max(0.0);
+        dx * dx + dy * dy
+    }
+
+    /// True if the two footprints touch or overlap (separating axis test with
+    /// the four rectangle axes). O(1).
+    pub fn footprints_overlap(&self, o: &Obb) -> bool {
+        let c = o.center_xy() - self.center_xy();
+        [self.axis_x, self.axis_y, o.axis_x, o.axis_y]
+            .iter()
+            .all(|&n| c.dot(n).abs() <= self.extent_along(n) + o.extent_along(n) + 1e-12)
+    }
+
+    /// Minimum distance between the two footprints (0 if they overlap). For
+    /// disjoint convex polygons the minimum is attained at a vertex of one of
+    /// them, so eight O(1) point-rectangle distances suffice.
+    pub fn footprint_distance(&self, o: &Obb) -> f64 {
+        if self.footprints_overlap(o) {
+            return 0.0;
+        }
+        let a = self.footprint.iter().map(|&p| o.footprint_point_distance_sq(p));
+        let b = o.footprint.iter().map(|&p| self.footprint_point_distance_sq(p));
+        a.chain(b).fold(f64::INFINITY, f64::min).sqrt()
+    }
+
+    /// Area of the intersection of the two footprints. Exact; uses interval
+    /// products when the rectangles are aligned with each other and convex
+    /// clipping otherwise.
+    pub fn footprint_overlap_area(&self, o: &Obb) -> f64 {
+        if !self.footprints_overlap(o) {
+            return 0.0;
+        }
+        let cross = self.axis_x.cross(o.axis_x).abs();
+        let dot = self.axis_x.dot(o.axis_x).abs();
+        if cross < 1e-12 || dot < 1e-12 {
+            // Aligned: express o in self's frame; o's extents swap if rotated by 90 degrees.
+            let (ox, oy) = if cross < 1e-12 {
+                (o.half[0], o.half[1])
+            } else {
+                (o.half[1], o.half[0])
+            };
+            let d = o.center_xy() - self.center_xy();
+            let (u, v) = (d.dot(self.axis_x), d.dot(self.axis_y));
+            let ix = ((self.half[0]).min(u + ox) - (-self.half[0]).max(u - ox)).max(0.0);
+            let iy = ((self.half[1]).min(v + oy) - (-self.half[1]).max(v - oy)).max(0.0);
+            return ix * iy;
+        }
+        intersection_area(&self.footprint, &o.footprint)
     }
 }
 

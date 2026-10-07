@@ -217,3 +217,23 @@ proptest! {
         prop_assert!(f + b <= 1.0 + TOL, "front {f} + behind {b}");
     }
 }
+
+proptest! {
+    #![proptest_config(ProptestConfig::with_cases(512))]
+
+    /// The O(1) rectangle routines agree with the generic convex polygon ones.
+    #[test]
+    fn fast_footprint_routines_match_generic(a in obj(), b in obj(), snap in 0usize..3) {
+        let (mut a, b) = (a, b);
+        // also exercise the aligned fast path (same yaw or rotated by 90 degrees)
+        if snap == 1 { a.yaw = b.yaw; }
+        if snap == 2 { a.yaw = b.yaw + std::f64::consts::FRAC_PI_2; }
+        let (oa, ob) = (to_obb(&a), to_obb(&b));
+        let d_fast = oa.footprint_distance(&ob);
+        let d_gen = spatialamigo::geometry::polygon_distance(&oa.footprint, &ob.footprint);
+        prop_assert!((d_fast - d_gen).abs() < 1e-9, "distance {d_fast} vs {d_gen}");
+        let i_fast = oa.footprint_overlap_area(&ob);
+        let i_gen = spatialamigo::geometry::intersection_area(&oa.footprint, &ob.footprint);
+        prop_assert!((i_fast - i_gen).abs() < 1e-9, "area {i_fast} vs {i_gen}");
+    }
+}

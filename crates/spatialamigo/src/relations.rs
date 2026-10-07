@@ -10,9 +10,7 @@ use std::fmt;
 
 use serde::{Deserialize, Serialize};
 
-use crate::geometry::{
-    convex_hull, intersection_area, point_polygon_distance, polygon_distance, sigmoid, Obb, Vec2,
-};
+use crate::geometry::{convex_hull, intersection_area, point_polygon_distance, sigmoid, Obb, Vec2};
 use crate::scene::Viewpoint;
 
 /// A spatial relation between a target and its anchor(s).
@@ -285,7 +283,7 @@ fn xy_term(frac: f64, gap: f64, p: &Params) -> f64 {
 /// Raw horizontal distance used by closest/farthest:
 /// `d = gap(footprints) + center_weight * |c_t - c_a|`.
 pub fn horizontal_distance(t: &Obb, a: &Obb, p: &Params) -> PredicateValue {
-    let gap = polygon_distance(&t.footprint, &a.footprint);
+    let gap = t.footprint_distance(a);
     let center = (t.center_xy() - a.center_xy()).norm();
     let d = gap + p.center_weight * center;
     PredicateValue {
@@ -336,7 +334,7 @@ pub fn between(t: &Obb, a: &Obb, b: &Obb, p: &Params) -> PredicateValue {
     let penetration = [a, b]
         .iter()
         .map(|anc| {
-            let xy = intersection_area(&t.footprint, &anc.footprint) / t.area().min(anc.area());
+            let xy = t.footprint_overlap_area(anc) / t.area().min(anc.area());
             let z = tz.overlap(anc.z()) / tz.len().min(anc.z().len());
             (xy * z).clamp(0.0, 1.0)
         })
@@ -361,9 +359,9 @@ pub fn between(t: &Obb, a: &Obb, b: &Obb, p: &Params) -> PredicateValue {
 
 /// Target above anchor without touching it.
 pub fn above(t: &Obb, a: &Obb, p: &Params) -> PredicateValue {
-    let overlap = intersection_area(&t.footprint, &a.footprint);
+    let overlap = t.footprint_overlap_area(a);
     let frac = (overlap / t.area().min(a.area())).clamp(0.0, 1.0);
-    let gap_xy = polygon_distance(&t.footprint, &a.footprint);
+    let gap_xy = t.footprint_distance(a);
     let xy = xy_term(frac, gap_xy, p);
     let gap_z = t.z().lo - a.z().hi;
     let clear = sigmoid((gap_z - p.touch_tolerance) / p.touch_softness);
@@ -387,9 +385,9 @@ pub fn below(t: &Obb, a: &Obb, p: &Params) -> PredicateValue {
 /// Target resting on the anchor: footprint supported by the anchor and bottom
 /// face touching the anchor's top face.
 pub fn on(t: &Obb, a: &Obb, p: &Params) -> PredicateValue {
-    let overlap = intersection_area(&t.footprint, &a.footprint);
+    let overlap = t.footprint_overlap_area(a);
     let support = (overlap / t.area()).clamp(0.0, 1.0);
-    let gap_xy = polygon_distance(&t.footprint, &a.footprint);
+    let gap_xy = t.footprint_distance(a);
     let xy = xy_term(support, gap_xy, p);
     let gap_z = t.z().lo - a.z().hi;
     let contact = gauss(gap_z, p.contact_sigma);
@@ -477,7 +475,7 @@ pub fn directional(t: &Obb, a: &Obb, rel: Relation, frame: &DirectionalFrame, p:
     let axis_term = sigmoid(axis / p.sector_softness);
     let side = sigmoid(coord / p.sector_smoothing);
     let sector = axis_term * side;
-    let gap = polygon_distance(&t.footprint, &a.footprint);
+    let gap = t.footprint_distance(a);
     let falloff = 1.0 / (1.0 + gap / p.direction_falloff);
     PredicateValue::new(
         sector * falloff,
