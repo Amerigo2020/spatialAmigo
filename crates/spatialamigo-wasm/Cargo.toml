@@ -1,0 +1,21 @@
+[package]
+name = "spatialamigo-wasm"
+description = "WebAssembly bindings for spatialAmigo."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+publish = false
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+spatialamigo.workspace = true
+serde_json.workspace = true
+wasm-bindgen = "0.2"
+
+[lints]
+workspace = true

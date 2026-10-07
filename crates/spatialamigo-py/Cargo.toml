@@ -1,0 +1,22 @@
+[package]
+name = "spatialamigo-py"
+description = "Python bindings for spatialAmigo."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+publish = false
+
+[lib]
+name = "_core"
+crate-type = ["cdylib"]
+
+[dependencies]
+spatialamigo.workspace = true
+serde_json.workspace = true
+pyo3 = { version = "0.22", features = ["abi3-py39"] }
+
+[lints]
+workspace = true

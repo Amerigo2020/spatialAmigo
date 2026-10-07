@@ -1,0 +1,27 @@
+/target
+**/*.rs.bk
+Cargo.lock.bak
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+*.so
+*.pyd
+python/spatialamigo/_core*.so
+dist/
+.ruff_cache/
+
+# WASM / web
+crates/spatialamigo-wasm/pkg/
+web/pkg/
+web/vendor/
+web/node_modules/
+web/dist/
+node_modules/
+
+# Evaluation outputs that depend on licensed data
+eval/sr3d/data/
+eval/sr3d/out/
+crates/spatialamigo-wasm/pkg-node/
