@@ -7,7 +7,7 @@ use pyo3::create_exception;
 use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 use pyo3::types::{PyList, PyString};
-use spatialamigo::{Error, Params, Query, Resolution, Resolver, Scene};
+use spatialamigo::{Error, Params, Query, Resolution, ResolveOptions, Resolver, Scene};
 
 create_exception!(
     _core,
@@ -239,17 +239,23 @@ impl PyResolver {
     }
 
     /// Resolves a sentence (str, parsed by the template parser) or a
-    /// structured query (dict).
-    fn resolve(&self, py: Python<'_>, query: &Bound<'_, PyAny>) -> PyResult<PyResolution> {
+    /// structured query (dict). `explain=False` skips the text explanation
+    /// (the structured trace stays complete).
+    #[pyo3(signature = (query, explain=true))]
+    fn resolve(&self, py: Python<'_>, query: &Bound<'_, PyAny>, explain: bool) -> PyResult<PyResolution> {
+        let opts = ResolveOptions { explanation: explain };
         let res = if let Ok(text) = query.cast::<PyString>() {
             let text = text.to_string();
-            py.detach(|| self.inner.resolve_text(&text))
+            py.detach(|| {
+                spatialamigo::parse(&text, &self.inner.scene().labels())
+                    .and_then(|q| self.inner.resolve_with(&q, &opts))
+            })
         } else {
             let q = Query::from_json(&as_json(py, query)?).map_err(|e| match e {
                 Error::Json(m) => QueryError::new_err(format!("invalid query: {m}")),
                 other => to_py_err(other),
             })?;
-            py.detach(|| self.inner.resolve(&q))
+            py.detach(|| self.inner.resolve_with(&q, &opts))
         };
         res.map(|inner| PyResolution { inner }).map_err(to_py_err)
     }
@@ -259,7 +265,7 @@ impl PyResolver {
     fn resolve_many(&self, py: Python<'_>, queries: &Bound<'_, PyList>) -> PyResult<Vec<Py<PyAny>>> {
         let mut out = Vec::with_capacity(queries.len());
         for q in queries.iter() {
-            match self.resolve(py, &q) {
+            match self.resolve(py, &q, true) {
                 Ok(r) => out.push(Py::new(py, r)?.into_any()),
                 Err(e) => out.push(e.into_value(py).into_any()),
             }

@@ -38,7 +38,7 @@ pub mod relations;
 pub mod scene;
 
 pub use error::{Error, Result};
-pub use eval::{Candidate, ConstraintTrace, Resolution, Resolver};
+pub use eval::{Candidate, ConstraintTrace, Resolution, ResolveOptions, Resolver};
 pub use geometry::Obb;
 pub use parser::parse;
 pub use query::{normalize_label, Constraint, ObjectRef, Query};
