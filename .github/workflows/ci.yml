@@ -63,6 +63,8 @@ jobs:
           uv sync
           uv run maturin develop --release
           uv run pytest -q
+          uv run python examples/python/quickstart.py
+          uv run python examples/python/llm_parser.py
       - uses: actions/upload-artifact@v4
         with:
           name: wheel-${{ matrix.os }}

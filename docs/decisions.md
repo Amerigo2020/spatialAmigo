@@ -50,3 +50,14 @@ Decisions taken while building spatialAmigo autonomously. Each entry states the 
 * Ids are shuffled within each label because the resolver breaks exact ties by id; otherwise the target would often win ties by being `_1`.
 * Clean accuracy is reported but framed as a consistency check. Three additional views make the benchmark informative: a relation-agnostic "nearest to the anchor" baseline, Gaussian pose noise on all objects, and held-out paraphrases written after the parser.
 * `results/synthetic/report.md` and `report.json` are committed so the README numbers are traceable; the per-sample `samples.jsonl` is regenerated on demand and ignored by git.
+
+## D7. Python bindings and LLM parser
+
+* PyO3 0.29 with the `abi3-py39` feature: one wheel per platform covers every CPython from 3.9 on.
+* Data crosses the boundary as JSON (dicts in, dicts out) instead of mirrored Python classes. The Rust types stay the single source of truth for validation, and results are trivially serializable for logging or a web UI.
+* Exceptions form a hierarchy under `SpatialAmigoError(ValueError)`: `SceneError`, `QueryError`, `ParseError`, `ReferenceError`.
+* The GIL is released (`py.detach`) during resolution.
+* The LLM parser has no SDK dependency (plain `urllib`). Providers: OpenAI Chat Completions with `response_format` JSON schema in strict mode (also covers vLLM, Ollama and other compatible servers) and the Anthropic Messages API with a forced tool call whose `input_schema` is the query schema.
+* The LLM schema is a strict-mode subset of `query-v0.1.json` (all fields required, `frame` explicit, labels as strings) and restricts `target` and `anchors` to an enum of the scene's labels. Output is validated by the Rust core; one retry with the validation error is allowed.
+* No model ids are hard-coded as defaults. Model names change quickly and a silent default would age badly; the caller passes `model`.
+* The LLM fixtures are hand-written in the providers' documented response formats because no API keys were available in this session. They are marked `"recorded": false`, and `scripts/record_llm_fixtures.py` replaces them with live responses.

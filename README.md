@@ -35,6 +35,43 @@ selected mug_2 with score 0.764 (margin 0.764 over rank 2, 2 candidate(s))
 
 Try it: `cargo run -p spatialamigo --example resolve -- examples/scenes/tabletop.json "the mug closest to the bowl"`.
 
+### Python
+
+The Python package wraps the Rust core with PyO3 (abi3 wheel, Python 3.9+). Development uses [uv](https://docs.astral.sh/uv/):
+
+```bash
+uv sync                    # creates .venv and builds the extension
+uv run maturin develop     # rebuild after changing Rust code
+uv run pytest              # 41 tests, no network
+```
+
+```python
+import spatialamigo as sa
+
+resolver = sa.Resolver(sa.Scene.from_file("examples/scenes/tabletop.json"))
+res = resolver.resolve("the mug to the left of the chair from my perspective")
+print(res.best, res.margin)        # mug_2 0.37
+print(res.candidates[0]["trace"])  # relation, frame, anchors, score, features
+
+# structured query, e.g. from a planner or an LLM
+resolver.resolve({"target": "mug", "constraints": [{"relation": "closest", "anchors": ["bowl"]}]}).best  # 'mug_1'
+```
+
+### Optional LLM parser
+
+For free language outside the template grammar, `spatialamigo.llm` asks a model to fill the query schema via structured output. The schema restricts target and anchors to the labels in the scene, the Rust core validates the result, and the resolver decides. The model never picks the object.
+
+```python
+from spatialamigo.llm import LLMParser, Anthropic, OpenAICompatible
+
+parser = LLMParser(Anthropic(model="<claude model id>"))               # ANTHROPIC_API_KEY
+# parser = LLMParser(OpenAICompatible(model="<model id>"))             # OPENAI_API_KEY
+# parser = LLMParser(OpenAICompatible(model="llama3.1", base_url="http://localhost:11434/v1"))  # Ollama
+res = parser.resolve(resolver, "grab the cup that sits left of my laptop")
+```
+
+No SDK dependency, no API key needed for tests: providers take a `transport` callable, and `python/tests/test_llm.py` runs against mocks and fixtures in the providers' response formats (`scripts/record_llm_fixtures.py` re-records them live).
+
 ## Architecture
 
 ```mermaid
