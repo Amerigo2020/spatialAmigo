@@ -43,7 +43,7 @@ resolver = sa.Resolver(sa.Scene.from_file("examples/scenes/tabletop.json"))
 
 res = resolver.resolve("the mug to the left of the chair from my perspective")
 res.best, res.margin               # ('mug_2', 0.38)
-res.candidates[0]["trace"]          # relation, frame, anchors, score, features
+res.candidates[0]["trace"]          # relation, family, frame, anchors, score, features
 print(res.explanation)
 
 # structured query, e.g. from a task planner or an LLM
@@ -173,7 +173,7 @@ Every Sr3D threshold becomes a smooth function, so candidates can be ranked and 
 Top-1 accuracy in %. How to read it:
 
 * **Clean scenes are a consistency check, not a challenge.** They are unambiguous by construction, so the soft scores must agree with the crisp rules. 100 % says they do for every relation.
-* **The baseline shows where relational reasoning matters.** "Pick the candidate nearest to the anchor" already solves support and vertical relations here, but fails on farthest, between and all directional relations (near random).
+* **The baseline shows where relational reasoning matters.** "Pick the candidate nearest to the anchor" already solves support and vertical relations here, but fails on farthest and all directional relations (near random) and is clearly weaker on between.
 * **Pose noise** (Gaussian on position, yaw and size of every object) emulates perception errors. Support degrades first because "on" needs face contact within a few centimeters.
 * **Held-out paraphrases** expose the template parser's limits ("the table that the book is on", "on the chair's left", "facing the bed"). This is what the optional LLM parser is for.
 
