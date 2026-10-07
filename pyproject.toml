@@ -1,0 +1,43 @@
+[build-system]
+requires = ["maturin>=1.7,<2"]
+build-backend = "maturin"
+
+[project]
+name = "spatialamigo"
+description = "Deterministic, explainable resolution of spatial referring expressions in 3D scenes (Rust core)."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT OR Apache-2.0" }
+authors = [{ name = "Amerigo Velletti" }]
+keywords = ["robotics", "spatial language", "3d grounding", "referit3d", "sr3d"]
+classifiers = [
+    "Programming Language :: Rust",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "License :: OSI Approved :: MIT License",
+    "License :: OSI Approved :: Apache Software License",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dynamic = ["version"]
+dependencies = []
+
+[project.optional-dependencies]
+eval = ["numpy>=1.24"]
+
+[project.urls]
+Repository = "https://github.com/Amerigo2020/spatialAmigo"
+
+[dependency-groups]
+dev = ["maturin>=1.7,<2", "pytest>=8", "numpy>=1.24", "jsonschema>=4.18"]
+
+[tool.maturin]
+manifest-path = "crates/spatialamigo-py/Cargo.toml"
+python-source = "python"
+module-name = "spatialamigo._core"
+features = ["pyo3/extension-module"]
+
+[tool.pytest.ini_options]
+testpaths = ["python/tests"]
+
+[tool.uv]
+# Rebuild the Rust extension whenever Rust or Python sources change.
+cache-keys = [{ file = "pyproject.toml" }, { file = "Cargo.toml" }, { file = "crates/**/*.rs" }, { file = "crates/**/Cargo.toml" }]
