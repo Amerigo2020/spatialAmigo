@@ -69,3 +69,13 @@ Decisions taken while building spatialAmigo autonomously. Each entry states the 
 * Coordinates stay z-up in three.js (`camera.up = (0, 0, 1)`), so scene JSON maps 1:1 to the rendering.
 * Screenshot and GIF are produced headless with Playwright and the bundled Chromium (SwiftShader WebGL) by `scripts/capture_demo.py`, so they can be regenerated after every change.
 * The Pages workflow is committed but gated: it only deploys on manual dispatch or when the repository variable `ENABLE_PAGES` is `true`, so nothing is published without Amerigo's opt-in.
+
+## D9. Sr3D adapter
+
+* The adapter lives in the Python package (`spatialamigo.sr3d`) so it is importable and unit-tested, with a thin CLI in `eval/sr3d/run.py`. NumPy is an optional dependency (`spatialamigo[eval]`).
+* It reads the same four ScanNet files ReferIt3D reads (`_vh_clean_2.ply`, segments, aggregation, axis alignment) with a small PLY reader, so no `plyfile` or `open3d` dependency is needed.
+* Object ids are ScanNet `objectId`s, labels the raw aggregation labels, which is what Sr3D's `target_id` and `instance_type` refer to.
+* Boxes are axis-aligned because ScanNet has no orientations. Allocentric rows are reported as skipped unless orientations are supplied, instead of being silently counted as failures.
+* Two modes separate geometry (structured query from the CSV columns, anchors by id) from language (template parser on the utterance).
+* Nothing is downloaded. The README documents the ScanNet terms-of-use process and downloads only the four needed file types.
+* Unlike ReferIt3D's point-to-point object distance, spatialAmigo's horizontal distance uses box footprints. On real scans this can rank objects differently from the Sr3D ground truth; the structured-query mode will show how often.
