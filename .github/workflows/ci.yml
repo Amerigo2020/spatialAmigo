@@ -36,6 +36,8 @@ jobs:
         run: cargo doc --no-deps -p spatialamigo
         env:
           RUSTDOCFLAGS: -D warnings
+      - name: synthetic benchmark (smoke run)
+        run: cargo run --release -p spatialamigo-eval --bin synth-bench -- --per-task 30
       - name: run examples
         run: |
           for ex in $(ls crates/spatialamigo/examples/*.rs 2>/dev/null | xargs -n1 basename | sed 's/\.rs$//'); do

@@ -79,3 +79,16 @@ Decisions taken while building spatialAmigo autonomously. Each entry states the 
 * Two modes separate geometry (structured query from the CSV columns, anchors by id) from language (template parser on the utterance).
 * Nothing is downloaded. The README documents the ScanNet terms-of-use process and downloads only the four needed file types.
 * Unlike ReferIt3D's point-to-point object distance, spatialAmigo's horizontal distance uses box footprints. On real scans this can rank objects differently from the Sr3D ground truth; the structured-query mode will show how often.
+
+## D10. Performance work and benchmarks
+
+* A first criterion run showed about 1.5 µs per candidate, 15 to 25 times slower than a vectorized NumPy version of the same formulas. Profiling found three causes, all fixed: `f64::hypot` (a slow libm call) in hot paths, generic polygon routines for what are always rectangles (replaced by O(1) separating-axis and point-rectangle distance routines, checked against the generic ones by a property test), and trace strings built for every anchor instead of only the winning one.
+* The text explanation lists only the top 10 candidates (the structured trace stays complete) and can be switched off with `ResolveOptions { explanation: false }` or `explain=False` in Python.
+* After these changes a query costs tens of microseconds for realistic scenes. NumPy remains faster for thousands of candidates because it computes scores only and assumes axis-aligned boxes. This is reported as is in the README; a trace-free batch path is on the roadmap rather than hidden behind a favourable benchmark choice.
+* The NumPy reference doubles as an independent check of the formulas: its scores agree with the Rust scores to within 1e-12 on every benchmark scene.
+* Criterion medians are converted into the README table by `bench/criterion_table.py`, so the numbers are traceable to raw results.
+
+## D11. Open items before a public release
+
+* `include_str!` in the core crate reads the schemas from the repository root. Before publishing to crates.io the schemas must be copied into the crate (or the paths changed), because `cargo package` only includes files inside the crate directory.
+* Python package metadata (classifiers, long description) is ready, but no wheel is uploaded. Publishing to crates.io, PyPI or npm, creating releases and changing repository visibility are left to Amerigo.

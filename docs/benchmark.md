@@ -6,7 +6,7 @@ Reproduce with
 cargo run --release -p spatialamigo-eval --bin synth-bench -- --seed 42 --per-task 400 --out results/synthetic
 ```
 
-The run takes well under a second on a laptop (6000 samples generated in about 60 ms, evaluated in about 0.3 s including parsing and resolver construction per sample).
+The run takes well under a second (6000 samples generated in about 55 ms and evaluated in about 0.26 s including parsing and resolver construction per sample, on a 2 vCPU cloud VM).
 
 ## How samples are built
 
@@ -38,9 +38,9 @@ Seed 42, 400 samples per relation, 6000 samples in total.
 | between | 400 | 3.02 | 100.0 | 100.0 | 100.0 | 35.7 | 79.8 | 0.95 |
 | vertical_proximity | 800 | 2.71 | 100.0 | 100.0 | 100.0 | 39.5 | 99.8 | 0.92 |
 | support | 800 | 2.66 | 100.0 | 100.0 | 100.0 | 40.1 | 100.0 | 1.00 |
-| allocentric | 1600 | 2.80 | 100.0 | 100.0 | 100.0 | 38.7 | 39.5 | 0.62 |
-| egocentric | 1600 | 2.84 | 100.0 | 100.0 | 100.0 | 38.1 | 37.7 | 0.64 |
-| **all** | 6000 | 2.82 | 100.0 | 100.0 | 100.0 | 38.3 | 59.2 | 0.79 |
+| allocentric | 1600 | 2.82 | 100.0 | 100.0 | 100.0 | 38.4 | 38.7 | 0.77 |
+| egocentric | 1600 | 2.83 | 100.0 | 100.0 | 100.0 | 38.2 | 37.6 | 0.78 |
+| **all** | 6000 | 2.82 | 100.0 | 100.0 | 100.0 | 38.3 | 59.0 | 0.86 |
 
 Per relation:
 
@@ -53,14 +53,14 @@ Per relation:
 | vertical_proximity | below | 400 | 100.0 | 100.0 | 100.0 | 36.5 | 100.0 |
 | support | on | 400 | 100.0 | 100.0 | 100.0 | 37.9 | 100.0 |
 | support | under | 400 | 100.0 | 100.0 | 100.0 | 42.3 | 100.0 |
-| allocentric | left | 400 | 100.0 | 100.0 | 100.0 | 38.4 | 46.2 |
-| allocentric | right | 400 | 100.0 | 100.0 | 100.0 | 38.7 | 40.0 |
-| allocentric | front | 400 | 100.0 | 100.0 | 100.0 | 38.7 | 33.8 |
-| allocentric | behind | 400 | 100.0 | 100.0 | 100.0 | 38.9 | 38.0 |
-| egocentric | left | 400 | 100.0 | 100.0 | 100.0 | 37.7 | 40.0 |
-| egocentric | right | 400 | 100.0 | 100.0 | 100.0 | 38.1 | 37.0 |
-| egocentric | front | 400 | 100.0 | 100.0 | 100.0 | 37.9 | 37.2 |
-| egocentric | behind | 400 | 100.0 | 100.0 | 100.0 | 38.5 | 36.5 |
+| allocentric | left | 400 | 100.0 | 100.0 | 100.0 | 37.7 | 42.0 |
+| allocentric | right | 400 | 100.0 | 100.0 | 100.0 | 38.3 | 43.8 |
+| allocentric | front | 400 | 100.0 | 100.0 | 100.0 | 38.6 | 33.2 |
+| allocentric | behind | 400 | 100.0 | 100.0 | 100.0 | 38.9 | 35.8 |
+| egocentric | left | 400 | 100.0 | 100.0 | 100.0 | 38.2 | 38.5 |
+| egocentric | right | 400 | 100.0 | 100.0 | 100.0 | 37.9 | 37.2 |
+| egocentric | front | 400 | 100.0 | 100.0 | 100.0 | 37.8 | 37.5 |
+| egocentric | behind | 400 | 100.0 | 100.0 | 100.0 | 38.7 | 37.0 |
 
 ### Robustness to pose noise (ground-truth query, resolver only)
 
@@ -70,7 +70,7 @@ Per relation:
 | between | 100.0 | 100.0 | 100.0 | 99.5 |
 | vertical_proximity | 100.0 | 100.0 | 100.0 | 99.2 |
 | support | 100.0 | 99.8 | 98.6 | 93.4 |
-| allocentric | 100.0 | 100.0 | 99.8 | 99.2 |
+| allocentric | 100.0 | 100.0 | 99.9 | 99.4 |
 | egocentric | 100.0 | 100.0 | 100.0 | 99.9 |
 | **all** | 100.0 | 100.0 | 99.7 | 98.3 |
 
@@ -82,8 +82,8 @@ Per relation:
 | between | 400 | 100.0 | 100.0 |
 | vertical_proximity | 800 | 86.1 | 86.1 |
 | support | 800 | 75.1 | 75.1 |
-| allocentric | 1600 | 81.1 | 82.3 |
-| egocentric | 1600 | 79.7 | 84.4 |
+| allocentric | 1600 | 81.1 | 81.7 |
+| egocentric | 1600 | 79.7 | 85.0 |
 | **all** | 6000 | 84.4 | 86.0 |
 
 Typical failures:
@@ -92,13 +92,12 @@ Typical failures:
 * "the nightstand that the book is on" parsed as `error: could not parse "the nightstand that the book is on": relation "on" needs an anchor object`
 * "the nightstand with the monitor on it" parsed as `error: could not parse "the nightstand with the monitor on it": relation "on" needs an anchor object`
 * "the lamp on the armchair's left" parsed as `lamp | on(armchair)`
-* "the trash can on the cabinet's right" parsed as `trash can | on(cabinet)`
-* "the plant facing the bed" parsed as `error: could not parse "the plant facing the bed": no spatial relation found`
-
+* "the chair on the cabinet's right" parsed as `chair | on(cabinet)`
+* "the box facing the chair" parsed as `error: could not parse "the box facing the chair": no spatial relation found`
 
 ## Reading the numbers
 
 * **Clean scenes are a consistency check, not a challenge.** 100 % means that the continuous scores rank the objects exactly like the crisp Sr3D rules. Because the scenes are generated to be unambiguous under those rules, a correct implementation must reach 100 %. The value of this table is that it would catch regressions in any relation and that it separates the parser from the geometry.
-* **Baselines show which families need relational reasoning.** "Nearest to the anchor" solves closest, support and vertical relations in these scenes, but fails on farthest (0 %), between (80 %) and on all directional relations (34 to 46 %, close to random). Left/right/front/behind are where an explicit frame model matters.
+* **Baselines show which families need relational reasoning.** "Nearest to the anchor" solves closest, support and vertical relations in these scenes, but fails on farthest (0 %), between (80 %) and on all directional relations (33 to 44 %, close to random). Left/right/front/behind are where an explicit frame model matters.
 * **Pose noise** emulates perception errors (Gaussian noise on position, yaw and size of every object, including anchors). Up to 5 cm and 5° the resolver stays above 98.6 % in every family. At 10 cm, 10° and 20 % size noise, support drops to 93 % because the contact term (σ_c = 3 cm) starts to reject objects whose bottom face no longer touches the support, and closest/farthest to 96 % where the 15 cm margin is eaten by noise. A larger `contact_sigma` trades robustness for discrimination between "on" and "above".
 * **Held-out paraphrases** were written after the parser and never used to tune it. The template parser keeps 84 % exact parses and 86 % end-to-end accuracy. Typical failures are constructions outside its grammar (relative clauses like "the table that the book is on", possessives like "on the chair's left", unknown landmarks like "the wall", verbs like "facing"). This is the gap the optional LLM parser closes without giving up deterministic resolution.

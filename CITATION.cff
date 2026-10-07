@@ -1,0 +1,32 @@
+cff-version: 1.2.0
+message: "If you use spatialAmigo, please cite it as below."
+title: "spatialAmigo: deterministic, explainable resolution of spatial referring expressions in 3D scenes"
+type: software
+authors:
+  - family-names: Velletti
+    given-names: Amerigo
+repository-code: "https://github.com/Amerigo2020/spatialAmigo"
+license: "MIT OR Apache-2.0"
+version: 0.1.0
+keywords:
+  - robotics
+  - spatial language
+  - 3D visual grounding
+  - Sr3D
+  - Rust
+references:
+  - type: conference-paper
+    title: "ReferIt3D: Neural Listeners for Fine-Grained 3D Object Identification in Real-World Scenes"
+    authors:
+      - family-names: Achlioptas
+        given-names: Panos
+      - family-names: Abdelreheem
+        given-names: Ahmed
+      - family-names: Xia
+        given-names: Fei
+      - family-names: Elhoseiny
+        given-names: Mohamed
+      - family-names: Guibas
+        given-names: Leonidas
+    collection-title: "European Conference on Computer Vision (ECCV)"
+    year: 2020
