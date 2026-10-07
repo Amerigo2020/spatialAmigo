@@ -42,3 +42,11 @@ Decisions taken while building spatialAmigo autonomously. Each entry states the 
 * "near", "next to", "beside" and "by" map to `closest`. Sr3D only uses closest/farthest, and a superlative is the most useful reading for picking one object.
 * The explanation warns when the best score is below 0.5 (weak match) or the margin is below 0.1 (ambiguous). The decision stays deterministic, but the caller (or a robot) can ask for clarification instead of acting.
 * Minimum supported Rust version is 1.82 (`Option::is_none_or`).
+
+## D6. Synthetic benchmark
+
+* Samples are built constructively and then verified by a crisp, threshold-based oracle that re-implements the Sr3D rules separately from the soft scores, so the ground truth does not reuse the code under test.
+* Own SplitMix64 generator instead of the `rand` crate: bit-for-bit reproducible across platforms and crate versions, no dependency.
+* Ids are shuffled within each label because the resolver breaks exact ties by id; otherwise the target would often win ties by being `_1`.
+* Clean accuracy is reported but framed as a consistency check. Three additional views make the benchmark informative: a relation-agnostic "nearest to the anchor" baseline, Gaussian pose noise on all objects, and held-out paraphrases written after the parser.
+* `results/synthetic/report.md` and `report.json` are committed so the README numbers are traceable; the per-sample `samples.jsonl` is regenerated on demand and ignored by git.

@@ -1,0 +1,466 @@
+{
+  "noise": {
+    "levels": [
+      {
+        "pos_m": 0.0,
+        "size_rel": 0.0,
+        "yaw_deg": 0.0
+      },
+      {
+        "pos_m": 0.02,
+        "size_rel": 0.05,
+        "yaw_deg": 2.0
+      },
+      {
+        "pos_m": 0.05,
+        "size_rel": 0.1,
+        "yaw_deg": 5.0
+      },
+      {
+        "pos_m": 0.1,
+        "size_rel": 0.2,
+        "yaw_deg": 10.0
+      }
+    ],
+    "overall": [
+      1.0,
+      0.9996666666666667,
+      0.9968333333333333,
+      0.9826666666666667
+    ],
+    "rows": [
+      [
+        "horizontal_proximity",
+        [
+          1.0,
+          1.0,
+          0.99375,
+          0.96375
+        ]
+      ],
+      [
+        "between",
+        [
+          1.0,
+          1.0,
+          1.0,
+          0.995
+        ]
+      ],
+      [
+        "vertical_proximity",
+        [
+          1.0,
+          1.0,
+          1.0,
+          0.9925
+        ]
+      ],
+      [
+        "support",
+        [
+          1.0,
+          0.9975,
+          0.98625,
+          0.93375
+        ]
+      ],
+      [
+        "allocentric",
+        [
+          1.0,
+          1.0,
+          0.998125,
+          0.9925
+        ]
+      ],
+      [
+        "egocentric",
+        [
+          1.0,
+          1.0,
+          1.0,
+          0.99875
+        ]
+      ]
+    ]
+  },
+  "paraphrases": {
+    "failures": [
+      [
+        "the clock on the wall above the nightstand",
+        "error: could not parse \"the clock on the wall above the nightstand\": unknown object \"wall\" (known: cabinet, clock, nightstand, sofa)"
+      ],
+      [
+        "the nightstand that the book is on",
+        "error: could not parse \"the nightstand that the book is on\": relation \"on\" needs an anchor object"
+      ],
+      [
+        "the nightstand with the monitor on it",
+        "error: could not parse \"the nightstand with the monitor on it\": relation \"on\" needs an anchor object"
+      ],
+      [
+        "the lamp on the armchair's left",
+        "lamp | on(armchair)"
+      ],
+      [
+        "the trash can on the cabinet's right",
+        "trash can | on(cabinet)"
+      ],
+      [
+        "the plant facing the bed",
+        "error: could not parse \"the plant facing the bed\": no spatial relation found"
+      ]
+    ],
+    "overall": [
+      6000,
+      0.8438333333333333,
+      0.8595
+    ],
+    "rows": [
+      [
+        "horizontal_proximity",
+        800,
+        1.0,
+        1.0
+      ],
+      [
+        "between",
+        400,
+        1.0,
+        1.0
+      ],
+      [
+        "vertical_proximity",
+        800,
+        0.86125,
+        0.86125
+      ],
+      [
+        "support",
+        800,
+        0.75125,
+        0.75125
+      ],
+      [
+        "allocentric",
+        1600,
+        0.81125,
+        0.823125
+      ],
+      [
+        "egocentric",
+        1600,
+        0.796875,
+        0.84375
+      ]
+    ]
+  },
+  "report": {
+    "by_family": [
+      [
+        "horizontal_proximity",
+        {
+          "mean_candidates": 2.97625,
+          "mean_margin": 0.9563545081872725,
+          "n": 800,
+          "nearest_acc": 0.5,
+          "parse_acc": 1.0,
+          "query_acc": 1.0,
+          "random_acc": 0.36468750000000033,
+          "text_acc": 1.0
+        }
+      ],
+      [
+        "between",
+        {
+          "mean_candidates": 3.02,
+          "mean_margin": 0.9528753114978278,
+          "n": 400,
+          "nearest_acc": 0.7975,
+          "parse_acc": 1.0,
+          "query_acc": 1.0,
+          "random_acc": 0.3574999999999997,
+          "text_acc": 1.0
+        }
+      ],
+      [
+        "vertical_proximity",
+        {
+          "mean_candidates": 2.70625,
+          "mean_margin": 0.9225457139034396,
+          "n": 800,
+          "nearest_acc": 0.9975,
+          "parse_acc": 1.0,
+          "query_acc": 1.0,
+          "random_acc": 0.3954166666666663,
+          "text_acc": 1.0
+        }
+      ],
+      [
+        "support",
+        {
+          "mean_candidates": 2.65875,
+          "mean_margin": 0.9990181322292949,
+          "n": 800,
+          "nearest_acc": 1.0,
+          "parse_acc": 1.0,
+          "query_acc": 1.0,
+          "random_acc": 0.401145833333333,
+          "text_acc": 1.0
+        }
+      ],
+      [
+        "allocentric",
+        {
+          "mean_candidates": 2.795625,
+          "mean_margin": 0.6231532245849069,
+          "n": 1600,
+          "nearest_acc": 0.395,
+          "parse_acc": 1.0,
+          "query_acc": 1.0,
+          "random_acc": 0.386875,
+          "text_acc": 1.0
+        }
+      ],
+      [
+        "egocentric",
+        {
+          "mean_candidates": 2.84125,
+          "mean_margin": 0.6434869071470594,
+          "n": 1600,
+          "nearest_acc": 0.376875,
+          "parse_acc": 1.0,
+          "query_acc": 1.0,
+          "random_acc": 0.38052083333333336,
+          "text_acc": 1.0
+        }
+      ]
+    ],
+    "by_relation": [
+      [
+        "horizontal_proximity",
+        "closest",
+        {
+          "mean_candidates": 2.9975,
+          "mean_margin": 0.952151136395277,
+          "n": 400,
+          "nearest_acc": 1.0,
+          "parse_acc": 1.0,
+          "query_acc": 1.0,
+          "random_acc": 0.3614583333333334,
+          "text_acc": 1.0
+        }
+      ],
+      [
+        "horizontal_proximity",
+        "farthest",
+        {
+          "mean_candidates": 2.955,
+          "mean_margin": 0.9605578799792686,
+          "n": 400,
+          "nearest_acc": 0.0,
+          "parse_acc": 1.0,
+          "query_acc": 1.0,
+          "random_acc": 0.36791666666666667,
+          "text_acc": 1.0
+        }
+      ],
+      [
+        "between",
+        "between",
+        {
+          "mean_candidates": 3.02,
+          "mean_margin": 0.9528753114978278,
+          "n": 400,
+          "nearest_acc": 0.7975,
+          "parse_acc": 1.0,
+          "query_acc": 1.0,
+          "random_acc": 0.3574999999999997,
+          "text_acc": 1.0
+        }
+      ],
+      [
+        "vertical_proximity",
+        "above",
+        {
+          "mean_candidates": 2.445,
+          "mean_margin": 0.9488748120308601,
+          "n": 400,
+          "nearest_acc": 0.995,
+          "parse_acc": 1.0,
+          "query_acc": 1.0,
+          "random_acc": 0.4258333333333336,
+          "text_acc": 1.0
+        }
+      ],
+      [
+        "vertical_proximity",
+        "below",
+        {
+          "mean_candidates": 2.9675,
+          "mean_margin": 0.8962166157760221,
+          "n": 400,
+          "nearest_acc": 1.0,
+          "parse_acc": 1.0,
+          "query_acc": 1.0,
+          "random_acc": 0.3649999999999997,
+          "text_acc": 1.0
+        }
+      ],
+      [
+        "support",
+        "on",
+        {
+          "mean_candidates": 2.855,
+          "mean_margin": 0.9999957350330105,
+          "n": 400,
+          "nearest_acc": 1.0,
+          "parse_acc": 1.0,
+          "query_acc": 1.0,
+          "random_acc": 0.37937499999999974,
+          "text_acc": 1.0
+        }
+      ],
+      [
+        "support",
+        "under",
+        {
+          "mean_candidates": 2.4625,
+          "mean_margin": 0.9980405294255782,
+          "n": 400,
+          "nearest_acc": 1.0,
+          "parse_acc": 1.0,
+          "query_acc": 1.0,
+          "random_acc": 0.4229166666666668,
+          "text_acc": 1.0
+        }
+      ],
+      [
+        "allocentric",
+        "left",
+        {
+          "mean_candidates": 2.835,
+          "mean_margin": 0.6270433540297159,
+          "n": 400,
+          "nearest_acc": 0.4625,
+          "parse_acc": 1.0,
+          "query_acc": 1.0,
+          "random_acc": 0.3839583333333335,
+          "text_acc": 1.0
+        }
+      ],
+      [
+        "allocentric",
+        "right",
+        {
+          "mean_candidates": 2.7775,
+          "mean_margin": 0.6238200941879574,
+          "n": 400,
+          "nearest_acc": 0.4,
+          "parse_acc": 1.0,
+          "query_acc": 1.0,
+          "random_acc": 0.38729166666666687,
+          "text_acc": 1.0
+        }
+      ],
+      [
+        "allocentric",
+        "front",
+        {
+          "mean_candidates": 2.795,
+          "mean_margin": 0.6171492639947257,
+          "n": 400,
+          "nearest_acc": 0.3375,
+          "parse_acc": 1.0,
+          "query_acc": 1.0,
+          "random_acc": 0.3874999999999998,
+          "text_acc": 1.0
+        }
+      ],
+      [
+        "allocentric",
+        "behind",
+        {
+          "mean_candidates": 2.775,
+          "mean_margin": 0.6246001861272314,
+          "n": 400,
+          "nearest_acc": 0.38,
+          "parse_acc": 1.0,
+          "query_acc": 1.0,
+          "random_acc": 0.38875,
+          "text_acc": 1.0
+        }
+      ],
+      [
+        "egocentric",
+        "left",
+        {
+          "mean_candidates": 2.87,
+          "mean_margin": 0.6474720397198326,
+          "n": 400,
+          "nearest_acc": 0.4,
+          "parse_acc": 1.0,
+          "query_acc": 1.0,
+          "random_acc": 0.37687499999999974,
+          "text_acc": 1.0
+        }
+      ],
+      [
+        "egocentric",
+        "right",
+        {
+          "mean_candidates": 2.83,
+          "mean_margin": 0.6476179199766575,
+          "n": 400,
+          "nearest_acc": 0.37,
+          "parse_acc": 1.0,
+          "query_acc": 1.0,
+          "random_acc": 0.3812499999999998,
+          "text_acc": 1.0
+        }
+      ],
+      [
+        "egocentric",
+        "front",
+        {
+          "mean_candidates": 2.855,
+          "mean_margin": 0.6397078100472385,
+          "n": 400,
+          "nearest_acc": 0.3725,
+          "parse_acc": 1.0,
+          "query_acc": 1.0,
+          "random_acc": 0.37916666666666665,
+          "text_acc": 1.0
+        }
+      ],
+      [
+        "egocentric",
+        "behind",
+        {
+          "mean_candidates": 2.81,
+          "mean_margin": 0.6391498588445103,
+          "n": 400,
+          "nearest_acc": 0.365,
+          "parse_acc": 1.0,
+          "query_acc": 1.0,
+          "random_acc": 0.3847916666666667,
+          "text_acc": 1.0
+        }
+      ]
+    ],
+    "failures": [],
+    "overall": {
+      "mean_candidates": 2.816666666666667,
+      "mean_margin": 0.785018169804384,
+      "n": 6000,
+      "nearest_acc": 0.592,
+      "parse_acc": 1.0,
+      "query_acc": 1.0,
+      "random_acc": 0.3833055555555522,
+      "text_acc": 1.0
+    },
+    "per_task": 400,
+    "seed": 42
+  }
+}
