@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>spatialAmigo demo</title>
+  <meta name="description" content="Resolve spatial referring expressions in 3D scenes, deterministically, in your browser (Rust + WebAssembly).">
+  <link rel="stylesheet" href="style.css">
+  <script type="importmap">
+    { "imports": { "three": "./vendor/three/three.module.min.js", "three/addons/": "./vendor/three/addons/" } }
+  </script>
+</head>
+<body>
+  <main class="app">
+    <section class="viewport" aria-label="3D scene">
+      <canvas id="canvas"></canvas>
+      <div class="legend" aria-hidden="true">
+        <span><i class="sw best"></i>selected</span>
+        <span><i class="sw cand"></i>candidates (opacity = score)</span>
+        <span><i class="sw anchor"></i>anchors</span>
+        <span><i class="sw view"></i>viewpoint</span>
+      </div>
+    </section>
+    <aside class="panel">
+      <header>
+        <h1>spatial<span>Amigo</span></h1>
+        <p class="tag">Spatial language to target object. Deterministic, explainable, Rust in WebAssembly. <span id="version"></span></p>
+      </header>
+      <label class="row">Scene
+        <select id="scene"></select>
+      </label>
+      <form id="form" class="query">
+        <input id="input" type="text" autocomplete="off" spellcheck="false" placeholder="the mug left of the laptop" aria-label="Referring expression or JSON query">
+        <button type="submit">Resolve</button>
+      </form>
+      <div id="examples" class="chips"></div>
+      <div id="status" class="status" role="status"></div>
+      <h2>Candidates</h2>
+      <table id="candidates" class="cands"><tbody></tbody></table>
+      <h2>Trace <small id="trace-of"></small></h2>
+      <div id="trace" class="trace"></div>
+      <details>
+        <summary>Parsed query</summary>
+        <pre id="query"></pre>
+      </details>
+      <details>
+        <summary>Explanation</summary>
+        <pre id="explanation"></pre>
+      </details>
+      <footer>
+        <a href="https://github.com/Amerigo2020/spatialAmigo">GitHub</a> · scene format v0.1 · relations after Sr3D (ReferIt3D, ECCV 2020)
+      </footer>
+    </aside>
+  </main>
+  <script type="module" src="main.js"></script>
+</body>
+</html>

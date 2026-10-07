@@ -1,0 +1,10 @@
+{
+  "name": "spatialamigo-web-demo",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Static three.js demo of spatialAmigo running in WebAssembly",
+  "license": "MIT OR Apache-2.0",
+  "devDependencies": {
+    "three": "0.170.0"
+  }
+}
