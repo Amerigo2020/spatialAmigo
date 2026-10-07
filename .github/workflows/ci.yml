@@ -83,8 +83,11 @@ jobs:
       - uses: taiki-e/install-action@v2
         with:
           tool: wasm-pack
-      - name: Build (web target)
-        run: wasm-pack build crates/spatialamigo-wasm --release --target web --out-dir ../../web/pkg
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Build web demo
+        run: scripts/build_web.sh
       - name: Smoke test (node target)
         run: |
           wasm-pack build crates/spatialamigo-wasm --release --target nodejs --out-dir pkg-node

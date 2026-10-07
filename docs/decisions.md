@@ -61,3 +61,11 @@ Decisions taken while building spatialAmigo autonomously. Each entry states the 
 * The LLM schema is a strict-mode subset of `query-v0.1.json` (all fields required, `frame` explicit, labels as strings) and restricts `target` and `anchors` to an enum of the scene's labels. Output is validated by the Rust core; one retry with the validation error is allowed.
 * No model ids are hard-coded as defaults. Model names change quickly and a silent default would age badly; the caller passes `model`.
 * The LLM fixtures are hand-written in the providers' documented response formats because no API keys were available in this session. They are marked `"recorded": false`, and `scripts/record_llm_fixtures.py` replaces them with live responses.
+
+## D8. WASM and web demo
+
+* The WASM API passes JSON strings in both directions (`WasmResolver.resolve(text_or_json)`), so no `serde-wasm-bindgen` or `js-sys` dependency is needed and the payload matches the Python and Rust JSON exactly.
+* The demo is plain HTML, CSS and an ES module with an import map. No bundler. three.js (pinned 0.170.0) is installed with npm by `scripts/build_web.sh` and copied into `web/dist/vendor`, so the page works offline and on GitHub Pages without a CDN.
+* Coordinates stay z-up in three.js (`camera.up = (0, 0, 1)`), so scene JSON maps 1:1 to the rendering.
+* Screenshot and GIF are produced headless with Playwright and the bundled Chromium (SwiftShader WebGL) by `scripts/capture_demo.py`, so they can be regenerated after every change.
+* The Pages workflow is committed but gated: it only deploys on manual dispatch or when the repository variable `ENABLE_PAGES` is `true`, so nothing is published without Amerigo's opt-in.
