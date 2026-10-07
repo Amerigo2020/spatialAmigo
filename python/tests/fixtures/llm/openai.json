@@ -1,0 +1,238 @@
+{
+  "_note": "Hand-written fixtures in the documented response formats of the OpenAI Chat Completions API and the Anthropic Messages API. They were not captured from live calls. Re-record them against real providers with scripts/record_llm_fixtures.py.",
+  "provider": "openai",
+  "scene": "examples/scenes/tabletop.json",
+  "recorded": false,
+  "cases": [
+    {
+      "sentence": "grab the cup that sits left of my laptop",
+      "labels": [
+        "book",
+        "bowl",
+        "chair",
+        "laptop",
+        "mug",
+        "table"
+      ],
+      "expected_query": {
+        "target": "mug",
+        "constraints": [
+          {
+            "relation": "left",
+            "anchors": [
+              "laptop"
+            ],
+            "frame": "auto"
+          }
+        ]
+      },
+      "expected_best": "mug_2",
+      "response": {
+        "id": "chatcmpl-fixture-0",
+        "object": "chat.completion",
+        "created": 1790000000,
+        "model": "gpt-fixture",
+        "choices": [
+          {
+            "index": 0,
+            "finish_reason": "stop",
+            "message": {
+              "role": "assistant",
+              "content": "{\"target\": \"mug\", \"constraints\": [{\"relation\": \"left\", \"anchors\": [\"laptop\"], \"frame\": \"auto\"}]}",
+              "refusal": null
+            }
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 512,
+          "completion_tokens": 30,
+          "total_tokens": 542
+        }
+      }
+    },
+    {
+      "sentence": "the table that the book is on",
+      "labels": [
+        "book",
+        "bowl",
+        "chair",
+        "laptop",
+        "mug",
+        "table"
+      ],
+      "expected_query": {
+        "target": "table",
+        "constraints": [
+          {
+            "relation": "under",
+            "anchors": [
+              "book"
+            ],
+            "frame": "auto"
+          }
+        ]
+      },
+      "expected_best": "table_1",
+      "response": {
+        "id": "chatcmpl-fixture-1",
+        "object": "chat.completion",
+        "created": 1790000000,
+        "model": "gpt-fixture",
+        "choices": [
+          {
+            "index": 0,
+            "finish_reason": "stop",
+            "message": {
+              "role": "assistant",
+              "content": "{\"target\": \"table\", \"constraints\": [{\"relation\": \"under\", \"anchors\": [\"book\"], \"frame\": \"auto\"}]}",
+              "refusal": null
+            }
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 512,
+          "completion_tokens": 30,
+          "total_tokens": 542
+        }
+      }
+    },
+    {
+      "sentence": "which mug is on the chair's left?",
+      "labels": [
+        "book",
+        "bowl",
+        "chair",
+        "laptop",
+        "mug",
+        "table"
+      ],
+      "expected_query": {
+        "target": "mug",
+        "constraints": [
+          {
+            "relation": "left",
+            "anchors": [
+              "chair"
+            ],
+            "frame": "allocentric"
+          }
+        ]
+      },
+      "expected_best": "mug_1",
+      "response": {
+        "id": "chatcmpl-fixture-2",
+        "object": "chat.completion",
+        "created": 1790000000,
+        "model": "gpt-fixture",
+        "choices": [
+          {
+            "index": 0,
+            "finish_reason": "stop",
+            "message": {
+              "role": "assistant",
+              "content": "{\"target\": \"mug\", \"constraints\": [{\"relation\": \"left\", \"anchors\": [\"chair\"], \"frame\": \"allocentric\"}]}",
+              "refusal": null
+            }
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 512,
+          "completion_tokens": 30,
+          "total_tokens": 542
+        }
+      }
+    },
+    {
+      "sentence": "the mug that is right next to the salad bowl, not the one near the book",
+      "labels": [
+        "book",
+        "bowl",
+        "chair",
+        "laptop",
+        "mug",
+        "table"
+      ],
+      "expected_query": {
+        "target": "mug",
+        "constraints": [
+          {
+            "relation": "closest",
+            "anchors": [
+              "bowl"
+            ],
+            "frame": "auto"
+          }
+        ]
+      },
+      "expected_best": "mug_1",
+      "response": {
+        "id": "chatcmpl-fixture-3",
+        "object": "chat.completion",
+        "created": 1790000000,
+        "model": "gpt-fixture",
+        "choices": [
+          {
+            "index": 0,
+            "finish_reason": "stop",
+            "message": {
+              "role": "assistant",
+              "content": "{\"target\": \"mug\", \"constraints\": [{\"relation\": \"closest\", \"anchors\": [\"bowl\"], \"frame\": \"auto\"}]}",
+              "refusal": null
+            }
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 512,
+          "completion_tokens": 30,
+          "total_tokens": 542
+        }
+      }
+    },
+    {
+      "sentence": "from where I'm standing, the mug to the left of the chair",
+      "labels": [
+        "book",
+        "bowl",
+        "chair",
+        "laptop",
+        "mug",
+        "table"
+      ],
+      "expected_query": {
+        "target": "mug",
+        "constraints": [
+          {
+            "relation": "left",
+            "anchors": [
+              "chair"
+            ],
+            "frame": "egocentric"
+          }
+        ]
+      },
+      "expected_best": "mug_2",
+      "response": {
+        "id": "chatcmpl-fixture-4",
+        "object": "chat.completion",
+        "created": 1790000000,
+        "model": "gpt-fixture",
+        "choices": [
+          {
+            "index": 0,
+            "finish_reason": "stop",
+            "message": {
+              "role": "assistant",
+              "content": "{\"target\": \"mug\", \"constraints\": [{\"relation\": \"left\", \"anchors\": [\"chair\"], \"frame\": \"egocentric\"}]}",
+              "refusal": null
+            }
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 512,
+          "completion_tokens": 30,
+          "total_tokens": 542
+        }
+      }
+    }
+  ]
+}
