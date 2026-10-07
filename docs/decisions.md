@@ -32,3 +32,13 @@ Decisions taken while building spatialAmigo autonomously. Each entry states the 
 * Egocentric frames use the line of sight from the viewpoint to each anchor rather than the global viewing direction. Default frame `auto` is allocentric when the anchor has a front, otherwise egocentric.
 * Constraints combine with a product (AND). Anchor labels with several instances use the best anchor (existential reading).
 * No dependency on a linear algebra crate: the core only needs 2D convex polygon routines (clipping, hull, distance) that are short, exact and keep the WASM build small.
+
+## D5. Query model and parser
+
+* A query is a target label, a list of constraints (AND) and an optional candidate id list. Anchors are referenced by label (string) or by id (`{"id": ...}`), which the Sr3D adapter needs because Sr3D gives anchor ids. Schema: `schema/query-v0.1.json`.
+* Unknown JSON fields are rejected in queries (`deny_unknown_fields`). Queries come from LLMs, and a typo such as `constraint` instead of `constraints` must fail loudly instead of silently returning every candidate.
+* The template parser is a phrase table with longest match plus vocabulary matching against the scene labels. It needs no grammar library and compiles to WASM. Labels may contain stop words ("trash can"), so labels are matched on raw tokens and the match that ends last wins (head noun).
+* Frame markers such as "from my perspective" select the egocentric frame for all directional constraints in the sentence; "from the chair's point of view" selects allocentric.
+* "near", "next to", "beside" and "by" map to `closest`. Sr3D only uses closest/farthest, and a superlative is the most useful reading for picking one object.
+* The explanation warns when the best score is below 0.5 (weak match) or the margin is below 0.1 (ambiguous). The decision stays deterministic, but the caller (or a robot) can ask for clarification instead of acting.
+* Minimum supported Rust version is 1.82 (`Option::is_none_or`).
