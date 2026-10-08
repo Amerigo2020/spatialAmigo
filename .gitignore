@@ -28,3 +28,4 @@ crates/spatialamigo-wasm/pkg-node/
 results/**/samples.jsonl
 data/
 *.pdb
+eval/sr3d/fronts*.json

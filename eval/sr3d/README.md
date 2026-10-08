@@ -44,7 +44,21 @@ Allocentric utterances need object orientations, which ScanNet does not contain 
 
    Output: `eval/sr3d/out/report.md` (table per family and mode), `eval/sr3d/out/failures.json` (first 50 failures with the parsed query) and the converted scenes in `eval/sr3d/out/scenes/`. Converted scenes are cached, so later runs are fast. `data/` and `eval/sr3d/out/` are git-ignored because they are derived from ScanNet; do not commit or publish them.
 
-5. **Optional: allocentric relations.** Provide object orientations as JSON `{scan_id: {object_id: {"yaw": rad, "front": [1, 0, 0]}}}` with `--fronts`. Scan2CAD (https://github.com/skanti/Scan2CAD, its own terms) provides the 9-DoF alignments ReferIt3D used; converting them is left open (see the roadmap in the main README).
+5. **Optional: allocentric relations.** `--fronts` takes object orientations as JSON `{scan_id: {object_id: {"yaw": rad, "front": [1, 0, 0]}}}` (`yaw` is the heading of the front in the aligned scan, the box is oriented along it). `eval/sr3d/scan2cad_to_fronts.py` writes this file from one of two sources:
+
+   * **ReferIt3D's own oriented boxes (recommended, exact).** The ReferIt3D repository contains `referit3d/data/scan2cad/object_oriented_bboxes/object_oriented_bboxes_aligned_scans.json` (keyed by `<scan>_<objectId>`, aligned coordinates, a `front_point` on the front face) and `referit3d/data/scan2cad/shapenet_has_front.csv` (which ShapeNet models have a front; ReferIt3D annotated this for Sr3D). These are the fronts Sr3D was generated with. They are derived from Scan2CAD, so check that its terms cover your use.
+
+     ```bash
+     uv run python eval/sr3d/scan2cad_to_fronts.py referit3d --boxes object_oriented_bboxes_aligned_scans.json          --has-front shapenet_has_front.csv --out eval/sr3d/fronts.json
+     ```
+
+   * **Scan2CAD `full_annotations.json`** (https://github.com/skanti/Scan2CAD, requires its own agreement). Each CAD alignment is transformed into the axis-aligned ScanNet frame (`axisAlignment @ inv(M_scan) @ M_cad`, `M = T @ R @ S`, quaternions `[w, x, y, z]`, as in Scan2CAD's `Annotation2Mesh.py`) and assigned to the ScanNet instance whose axis-aligned box has the highest IoU with the transformed CAD box (`--min-iou`, default 0.3; one alignment per object, best IoU wins). The front is the CAD `-z` axis (ShapeNet: y up, front `-z`). Symmetric models (`sym` other than `__SYM_NONE`) and fronts tilted more than 60° out of the floor are skipped. Passing ReferIt3D's `--has-front` CSV restricts the result to models with a front, as in Sr3D.
+
+     ```bash
+     uv run python eval/sr3d/scan2cad_to_fronts.py scan2cad --annotations full_annotations.json          --scannet data/scannet/scans --has-front shapenet_has_front.csv --out eval/sr3d/fronts.json
+     ```
+
+   Then add `--fronts eval/sr3d/fronts.json` to `run.py`. The script prints how many alignments were matched, symmetric, unmatched or tilted.
 
 ## Column mapping
 

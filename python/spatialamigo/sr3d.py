@@ -140,6 +140,25 @@ def normalize_label(label: str) -> str:
     return " ".join(label.lower().replace("_", " ").replace("-", " ").split())
 
 
+def instance_points(scan_dir: Path, scan_id: str, align: bool = True, min_points: int = 1):
+    """Yields ``(objectId as str, raw label, points)`` for every ScanNet instance, after ``axisAlignment`` if ``align``."""
+    _need_numpy()
+    scan_dir = Path(scan_dir)
+    pts = read_ply_vertices(scan_dir / f"{scan_id}_vh_clean_2.ply")
+    if align:
+        m = read_axis_alignment(scan_dir / f"{scan_id}.txt")
+        pts = pts @ m[:3, :3].T + m[:3, 3]
+    segs = json.loads((scan_dir / f"{scan_id}_vh_clean_2.0.010000.segs.json").read_text())["segIndices"]
+    agg = json.loads((scan_dir / f"{scan_id}.aggregation.json").read_text())
+    seg_to_points: dict[int, list[int]] = defaultdict(list)
+    for i, s in enumerate(segs):
+        seg_to_points[s].append(i)
+    for g in agg["segGroups"]:
+        idx = [i for s in g["segments"] for i in seg_to_points.get(s, [])]
+        if len(idx) >= min_points:
+            yield str(g["objectId"]), g["label"], pts[idx]
+
+
 def build_scene(
     scan_dir: Path,
     scan_id: str,
@@ -154,24 +173,8 @@ def build_scene(
     ``fronts`` optionally maps object id to ``{"yaw": rad, "front": [x, y, z]}``
     (e.g. derived from Scan2CAD) and turns the box into an oriented one.
     """
-    _need_numpy()
-    scan_dir = Path(scan_dir)
-    pts = read_ply_vertices(scan_dir / f"{scan_id}_vh_clean_2.ply")
-    if align:
-        m = read_axis_alignment(scan_dir / f"{scan_id}.txt")
-        pts = pts @ m[:3, :3].T + m[:3, 3]
-    segs = json.loads((scan_dir / f"{scan_id}_vh_clean_2.0.010000.segs.json").read_text())["segIndices"]
-    agg = json.loads((scan_dir / f"{scan_id}.aggregation.json").read_text())
-    seg_to_points: dict[int, list[int]] = defaultdict(list)
-    for i, s in enumerate(segs):
-        seg_to_points[s].append(i)
     objects = []
-    for g in agg["segGroups"]:
-        idx = [i for s in g["segments"] for i in seg_to_points.get(s, [])]
-        if len(idx) < min_points:
-            continue
-        p = pts[idx]
-        oid = str(g["objectId"])
+    for oid, label, p in instance_points(scan_dir, scan_id, align, min_points):
         extra = (fronts or {}).get(oid)
         if extra:
             yaw = float(extra["yaw"])
@@ -189,7 +192,7 @@ def build_scene(
             lo, hi = p.min(0), p.max(0)
             center = [float(v) for v in (lo + hi) / 2]
             size = [float(max(v, 0.01)) for v in hi - lo]
-        o: dict[str, Any] = {"id": oid, "label": normalize_label(g["label"]), "center": center, "size": size, "yaw": yaw}
+        o: dict[str, Any] = {"id": oid, "label": normalize_label(label), "center": center, "size": size, "yaw": yaw}
         if extra and extra.get("front"):
             o["front"] = [float(v) for v in extra["front"]]
         objects.append(o)

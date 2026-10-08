@@ -224,13 +224,13 @@ Honest reading:
 * **No attributes.** Color, size and material words are ignored by the parser.
 * **Template parser coverage.** Relative clauses, possessives and verbs like "facing" are outside its grammar (86 % on held-out paraphrases); the LLM parser covers them.
 * **Hand-tuned constants.** Softness parameters are set by hand with physical meaning (meters, documented in `Params`), not fitted to data.
-* **Sr3D numbers pending.** The ScanNet evaluation is prepared but needs licensed data. Allocentric Sr3D rows additionally need object orientations (Scan2CAD).
+* **Sr3D numbers pending.** The ScanNet evaluation is prepared but needs licensed data. Allocentric Sr3D rows additionally need object orientations; `eval/sr3d/scan2cad_to_fronts.py` derives them from Scan2CAD or from ReferIt3D's oriented boxes (tested on synthetic data only).
 * **LLM fixtures cover one provider.** The OpenAI fixture was recorded live from `gpt-6-luna` (5 sentences, all pass after one prompt fix, see `docs/decisions.md` D7). The Anthropic fixture is still hand-written in the documented response format (`"recorded": false`); the recording script is included.
 
 ## Roadmap
 
 1. **Couple with motionAmigo:** "pick the mug left of the laptop" to target id to collision-free arm motion, both reading the same scene v0.1 file.
-2. Run the Sr3D evaluation on ScanNet and add the numbers; convert Scan2CAD alignments into `front` vectors for the allocentric rows.
+2. Run the Sr3D evaluation on ScanNet and add the numbers, including the allocentric rows with fronts from `eval/sr3d/scan2cad_to_fronts.py`.
 3. Nested anchors and disjunction/negation in the query model ("the mug that is not on the table").
 4. Batch scoring (structure-of-arrays, no trace) for very large candidate sets.
 5. Calibrate the softness parameters on Sr3D/Nr3D while keeping the predicates interpretable.
