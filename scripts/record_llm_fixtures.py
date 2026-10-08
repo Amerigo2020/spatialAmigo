@@ -28,6 +28,7 @@ def main() -> None:
     ap.add_argument("provider", choices=["openai", "anthropic"])
     ap.add_argument("--model", required=True)
     ap.add_argument("--base-url", default=None)
+    ap.add_argument("--no-temperature", action="store_true", help="omit temperature (reasoning models reject 0)")
     args = ap.parse_args()
 
     path = FIXTURES / f"{args.provider}.json"
@@ -40,6 +41,8 @@ def main() -> None:
         return resp
 
     kwargs = {"model": args.model, "transport": transport}
+    if args.no_temperature:
+        kwargs["temperature"] = None
     if args.base_url:
         kwargs["base_url"] = args.base_url
     provider = OpenAICompatible(**kwargs) if args.provider == "openai" else Anthropic(**kwargs)
@@ -49,7 +52,8 @@ def main() -> None:
         case["response"] = captured[-1]
         print(f"{case['sentence']!r} -> {json.dumps(out)}")
     data["recorded"] = True
-    data["_note"] = f"Recorded from {args.provider} model {args.model} with scripts/record_llm_fixtures.py."
+    temp = "" if args.no_temperature else ", temperature 0"
+    data["_note"] = f"Recorded from {args.provider} model {args.model}{temp} with scripts/record_llm_fixtures.py."
     path.write_text(json.dumps(data, indent=2) + "\n")
     print(f"wrote {path}")
 

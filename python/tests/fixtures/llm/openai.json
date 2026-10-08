@@ -1,8 +1,8 @@
 {
-  "_note": "Hand-written fixtures in the documented response formats of the OpenAI Chat Completions API and the Anthropic Messages API. They were not captured from live calls. Re-record them against real providers with scripts/record_llm_fixtures.py.",
+  "_note": "Recorded from openai model gpt-6-luna with scripts/record_llm_fixtures.py.",
   "provider": "openai",
   "scene": "examples/scenes/tabletop.json",
-  "recorded": false,
+  "recorded": true,
   "cases": [
     {
       "sentence": "grab the cup that sits left of my laptop",
@@ -28,26 +28,40 @@
       },
       "expected_best": "mug_2",
       "response": {
-        "id": "chatcmpl-fixture-0",
+        "id": "chatcmpl-EWZFhVhT8zYWhYe8CwV3STeU3Otn0",
         "object": "chat.completion",
-        "created": 1790000000,
-        "model": "gpt-fixture",
+        "created": 1791430713,
+        "model": "gpt-6-luna",
         "choices": [
           {
             "index": 0,
-            "finish_reason": "stop",
             "message": {
               "role": "assistant",
-              "content": "{\"target\": \"mug\", \"constraints\": [{\"relation\": \"left\", \"anchors\": [\"laptop\"], \"frame\": \"auto\"}]}",
-              "refusal": null
-            }
+              "content": "{\"target\":\"mug\",\"constraints\":[{\"relation\":\"left\",\"anchors\":[\"laptop\"],\"frame\":\"auto\"}]}",
+              "refusal": null,
+              "annotations": []
+            },
+            "finish_reason": "stop"
           }
         ],
         "usage": {
-          "prompt_tokens": 512,
-          "completion_tokens": 30,
-          "total_tokens": 542
-        }
+          "prompt_tokens": 688,
+          "completion_tokens": 164,
+          "total_tokens": 852,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 126,
+            "audio_tokens": 0,
+            "accepted_prediction_tokens": 0,
+            "rejected_prediction_tokens": 0
+          }
+        },
+        "service_tier": "default",
+        "system_fingerprint": null
       }
     },
     {
@@ -74,26 +88,40 @@
       },
       "expected_best": "table_1",
       "response": {
-        "id": "chatcmpl-fixture-1",
+        "id": "chatcmpl-EWZFjcG4OGQM7f5aaxHqhGbNx7NqA",
         "object": "chat.completion",
-        "created": 1790000000,
-        "model": "gpt-fixture",
+        "created": 1791430715,
+        "model": "gpt-6-luna",
         "choices": [
           {
             "index": 0,
-            "finish_reason": "stop",
             "message": {
               "role": "assistant",
-              "content": "{\"target\": \"table\", \"constraints\": [{\"relation\": \"under\", \"anchors\": [\"book\"], \"frame\": \"auto\"}]}",
-              "refusal": null
-            }
+              "content": "{\"target\":\"table\",\"constraints\":[{\"relation\":\"under\",\"anchors\":[\"book\"],\"frame\":\"auto\"}]}",
+              "refusal": null,
+              "annotations": []
+            },
+            "finish_reason": "stop"
           }
         ],
         "usage": {
-          "prompt_tokens": 512,
-          "completion_tokens": 30,
-          "total_tokens": 542
-        }
+          "prompt_tokens": 686,
+          "completion_tokens": 47,
+          "total_tokens": 733,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 11,
+            "audio_tokens": 0,
+            "accepted_prediction_tokens": 0,
+            "rejected_prediction_tokens": 0
+          }
+        },
+        "service_tier": "default",
+        "system_fingerprint": null
       }
     },
     {
@@ -120,26 +148,40 @@
       },
       "expected_best": "mug_1",
       "response": {
-        "id": "chatcmpl-fixture-2",
+        "id": "chatcmpl-EWZFkuxA99kAOLtM0rvyt84U799xg",
         "object": "chat.completion",
-        "created": 1790000000,
-        "model": "gpt-fixture",
+        "created": 1791430716,
+        "model": "gpt-6-luna",
         "choices": [
           {
             "index": 0,
-            "finish_reason": "stop",
             "message": {
               "role": "assistant",
-              "content": "{\"target\": \"mug\", \"constraints\": [{\"relation\": \"left\", \"anchors\": [\"chair\"], \"frame\": \"allocentric\"}]}",
-              "refusal": null
-            }
+              "content": "{\"target\":\"mug\",\"constraints\":[{\"relation\":\"left\",\"anchors\":[\"chair\"],\"frame\":\"allocentric\"}]}",
+              "refusal": null,
+              "annotations": []
+            },
+            "finish_reason": "stop"
           }
         ],
         "usage": {
-          "prompt_tokens": 512,
-          "completion_tokens": 30,
-          "total_tokens": 542
-        }
+          "prompt_tokens": 688,
+          "completion_tokens": 56,
+          "total_tokens": 744,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 18,
+            "audio_tokens": 0,
+            "accepted_prediction_tokens": 0,
+            "rejected_prediction_tokens": 0
+          }
+        },
+        "service_tier": "default",
+        "system_fingerprint": null
       }
     },
     {
@@ -166,26 +208,40 @@
       },
       "expected_best": "mug_1",
       "response": {
-        "id": "chatcmpl-fixture-3",
+        "id": "chatcmpl-EWZFmzSAuNi1iNg9NtPeU2t8HuquR",
         "object": "chat.completion",
-        "created": 1790000000,
-        "model": "gpt-fixture",
+        "created": 1791430718,
+        "model": "gpt-6-luna",
         "choices": [
           {
             "index": 0,
-            "finish_reason": "stop",
             "message": {
               "role": "assistant",
-              "content": "{\"target\": \"mug\", \"constraints\": [{\"relation\": \"closest\", \"anchors\": [\"bowl\"], \"frame\": \"auto\"}]}",
-              "refusal": null
-            }
+              "content": "{\"target\":\"mug\",\"constraints\":[{\"relation\":\"closest\",\"anchors\":[\"bowl\"],\"frame\":\"auto\"}]}",
+              "refusal": null,
+              "annotations": []
+            },
+            "finish_reason": "stop"
           }
         ],
         "usage": {
-          "prompt_tokens": 512,
-          "completion_tokens": 30,
-          "total_tokens": 542
-        }
+          "prompt_tokens": 696,
+          "completion_tokens": 288,
+          "total_tokens": 984,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 250,
+            "audio_tokens": 0,
+            "accepted_prediction_tokens": 0,
+            "rejected_prediction_tokens": 0
+          }
+        },
+        "service_tier": "default",
+        "system_fingerprint": null
       }
     },
     {
@@ -212,26 +268,40 @@
       },
       "expected_best": "mug_2",
       "response": {
-        "id": "chatcmpl-fixture-4",
+        "id": "chatcmpl-EWZFpTuc0Bs24jwwMD2NWLWX4g3XO",
         "object": "chat.completion",
-        "created": 1790000000,
-        "model": "gpt-fixture",
+        "created": 1791430721,
+        "model": "gpt-6-luna",
         "choices": [
           {
             "index": 0,
-            "finish_reason": "stop",
             "message": {
               "role": "assistant",
-              "content": "{\"target\": \"mug\", \"constraints\": [{\"relation\": \"left\", \"anchors\": [\"chair\"], \"frame\": \"egocentric\"}]}",
-              "refusal": null
-            }
+              "content": "{\"target\":\"mug\",\"constraints\":[{\"relation\":\"left\",\"anchors\":[\"chair\"],\"frame\":\"egocentric\"}]}",
+              "refusal": null,
+              "annotations": []
+            },
+            "finish_reason": "stop"
           }
         ],
         "usage": {
-          "prompt_tokens": 512,
-          "completion_tokens": 30,
-          "total_tokens": 542
-        }
+          "prompt_tokens": 692,
+          "completion_tokens": 54,
+          "total_tokens": 746,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 15,
+            "audio_tokens": 0,
+            "accepted_prediction_tokens": 0,
+            "rejected_prediction_tokens": 0
+          }
+        },
+        "service_tier": "default",
+        "system_fingerprint": null
       }
     }
   ]

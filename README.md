@@ -225,7 +225,7 @@ Honest reading:
 * **Template parser coverage.** Relative clauses, possessives and verbs like "facing" are outside its grammar (86 % on held-out paraphrases); the LLM parser covers them.
 * **Hand-tuned constants.** Softness parameters are set by hand with physical meaning (meters, documented in `Params`), not fitted to data.
 * **Sr3D numbers pending.** The ScanNet evaluation is prepared but needs licensed data. Allocentric Sr3D rows additionally need object orientations (Scan2CAD).
-* **LLM fixtures are synthetic.** They follow the providers' documented response formats but were not recorded live; the recording script is included.
+* **LLM fixtures cover one provider.** The OpenAI fixture was recorded live from `gpt-6-luna` (5 sentences, all pass after one prompt fix, see `docs/decisions.md` D7). The Anthropic fixture is still hand-written in the documented response format (`"recorded": false`); the recording script is included.
 
 ## Roadmap
 

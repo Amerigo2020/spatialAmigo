@@ -61,6 +61,10 @@ Decisions taken while building spatialAmigo autonomously. Each entry states the 
 * The LLM schema is a strict-mode subset of `query-v0.1.json` (all fields required, `frame` explicit, labels as strings) and restricts `target` and `anchors` to an enum of the scene's labels. Output is validated by the Rust core; one retry with the validation error is allowed.
 * No model ids are hard-coded as defaults. Model names change quickly and a silent default would age badly; the caller passes `model`.
 * The LLM fixtures are hand-written in the providers' documented response formats because no API keys were available in this session. They are marked `"recorded": false`, and `scripts/record_llm_fixtures.py` replaces them with live responses.
+* Live recording, 2026-10-08: the OpenAI fixture was recorded from `gpt-6-luna`. Two findings:
+  * Reasoning models reject `temperature: 0`. `temperature` is now `Optional`; `None` omits the field, and the recording script has `--no-temperature`. The default stays 0 for models that accept it.
+  * The first recording failed one case honestly: "grab the cup that sits left of my laptop" gave target `bowl` instead of `mug`. The prompt said "pick the closest allowed label", which is ambiguous next to the relation `closest` and does not say that meaning decides. The rule now asks for the label of the same kind of object (synonym or near-synonym), with examples that are deliberately not from the test set (couch to sofa, trash bin to trash can). After this change all five cases pass; the test expectations were not changed.
+  * The Anthropic fixture is still hand-written, because no `ANTHROPIC_API_KEY` was set.
 
 ## D8. WASM and web demo
 

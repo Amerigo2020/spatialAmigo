@@ -55,7 +55,8 @@ Fields:
     "egocentric" if the sentence speaks from the speaker's or camera's view ("from my perspective", "as I see it", "on my left"),
     "allocentric" if it uses the anchor's own orientation ("from the chair's point of view", "on the sofa's left", "facing the TV" means front of the TV),
     "auto" otherwise. Use "auto" for all non-directional relations.
-Ignore colors, sizes and other attributes, they are not supported. If the sentence mentions an object that is not in the allowed labels, pick the closest allowed label.
+Ignore colors, sizes and other attributes, they are not supported. If the sentence names an object with a word that is not an allowed label, use the allowed label for the same kind of object
+(a synonym or near-synonym, e.g. couch -> sofa, trash bin -> trash can), judged by meaning, not by position in the scene.
 
 Examples:
 "the mug closest to the laptop" -> {"target":"mug","constraints":[{"relation":"closest","anchors":["laptop"],"frame":"auto"}]}
@@ -140,7 +141,7 @@ class OpenAICompatible(Provider):
     model: str
     api_key: Optional[str] = None
     base_url: str = "https://api.openai.com/v1"
-    temperature: float = 0.0
+    temperature: Optional[float] = 0.0  # None omits the field (reasoning models reject it)
     strict: bool = True
     transport: Optional[Transport] = None
     extra_headers: dict[str, str] = field(default_factory=dict)
@@ -153,13 +154,14 @@ class OpenAICompatible(Provider):
             headers["Authorization"] = f"Bearer {key}"
         payload = {
             "model": self.model,
-            "temperature": self.temperature,
             "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}],
             "response_format": {
                 "type": "json_schema",
                 "json_schema": {"name": "spatial_query", "strict": self.strict, "schema": schema},
             },
         }
+        if self.temperature is not None:
+            payload["temperature"] = self.temperature
         resp = (self.transport or http_transport())(f"{self.base_url.rstrip('/')}/chat/completions", headers, payload)
         try:
             msg = resp["choices"][0]["message"]
@@ -184,7 +186,7 @@ class Anthropic(Provider):
     api_key: Optional[str] = None
     base_url: str = "https://api.anthropic.com"
     max_tokens: int = 1024
-    temperature: float = 0.0
+    temperature: Optional[float] = 0.0  # None omits the field (reasoning models reject it)
     anthropic_version: str = "2023-06-01"
     transport: Optional[Transport] = None
     name = "anthropic"
@@ -201,7 +203,6 @@ class Anthropic(Provider):
         payload = {
             "model": self.model,
             "max_tokens": self.max_tokens,
-            "temperature": self.temperature,
             "system": system,
             "messages": [{"role": "user", "content": user}],
             "tools": [
@@ -213,6 +214,8 @@ class Anthropic(Provider):
             ],
             "tool_choice": {"type": "tool", "name": self.TOOL},
         }
+        if self.temperature is not None:
+            payload["temperature"] = self.temperature
         resp = (self.transport or http_transport())(f"{self.base_url.rstrip('/')}/v1/messages", headers, payload)
         for block in resp.get("content", []) if isinstance(resp, Mapping) else []:
             if block.get("type") == "tool_use" and block.get("name") == self.TOOL:
