@@ -6,7 +6,9 @@ authors:
   - family-names: Velletti
     given-names: Amerigo
 repository-code: "https://github.com/Amerigo2020/spatialAmigo"
-license: "MIT OR Apache-2.0"
+license:
+  - MIT
+  - Apache-2.0
 version: 0.1.0
 keywords:
   - robotics
