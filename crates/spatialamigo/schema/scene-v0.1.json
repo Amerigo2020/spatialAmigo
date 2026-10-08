@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Amerigo2020/spatialAmigo/schema/scene-v0.1.json",
+  "title": "Amigo scene format v0.1",
+  "description": "Shared scene format of spatialAmigo and motionAmigo. Units are meters and radians. The world frame is right-handed with z pointing up. Change only together with a version bump.",
+  "type": "object",
+  "required": ["version", "frame", "objects"],
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "description": "Format version. Must be exactly \"0.1\" for this schema.",
+      "const": "0.1"
+    },
+    "frame": {
+      "description": "Name of the frame all poses are expressed in. v0.1 only knows the world frame.",
+      "const": "world"
+    },
+    "objects": {
+      "description": "Objects in the scene, each one an oriented 3D box with a semantic label.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/object" }
+    },
+    "viewpoint": {
+      "description": "Optional observer pose. Needed for egocentric relations (left/right/front/behind as seen by the observer).",
+      "$ref": "#/$defs/viewpoint"
+    }
+  },
+  "$defs": {
+    "vec3": {
+      "type": "array",
+      "items": { "type": "number" },
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "positiveVec3": {
+      "type": "array",
+      "items": { "type": "number", "exclusiveMinimum": 0 },
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "object": {
+      "type": "object",
+      "required": ["id", "label", "center", "size", "yaw"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "description": "Unique identifier within the scene.",
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "description": "Semantic class, lower case, e.g. \"mug\" or \"coffee table\".",
+          "type": "string",
+          "minLength": 1
+        },
+        "center": {
+          "description": "Center of the box in the world frame, meters.",
+          "$ref": "#/$defs/vec3"
+        },
+        "size": {
+          "description": "Full edge lengths of the box along the object's own x, y and z axes, meters.",
+          "$ref": "#/$defs/positiveVec3"
+        },
+        "yaw": {
+          "description": "Rotation of the object frame about the world z axis, radians, counter-clockwise seen from above.",
+          "type": "number"
+        },
+        "front": {
+          "description": "Optional unit vector in the object frame pointing out of the object's intrinsic front (e.g. the seat side of a chair). Objects without an intrinsic front omit it.",
+          "$ref": "#/$defs/vec3"
+        }
+      }
+    },
+    "viewpoint": {
+      "type": "object",
+      "required": ["position", "look_at"],
+      "additionalProperties": false,
+      "properties": {
+        "position": {
+          "description": "Observer (camera or eye) position in the world frame, meters.",
+          "$ref": "#/$defs/vec3"
+        },
+        "look_at": {
+          "description": "Point the observer looks at, world frame, meters.",
+          "$ref": "#/$defs/vec3"
+        }
+      }
+    }
+  }
+}

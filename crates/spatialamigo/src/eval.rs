@@ -98,7 +98,7 @@ impl Default for ResolveOptions {
 ///
 /// ```
 /// use spatialamigo::{Resolver, Scene};
-/// let scene = Scene::from_json(include_str!("../../../examples/scenes/tabletop.json")).unwrap();
+/// let scene = Scene::from_json(include_str!("../tests/fixtures/tabletop.json")).unwrap();
 /// let r = Resolver::new(scene);
 /// let res = r.resolve_text("the mug left of the laptop").unwrap();
 /// assert_eq!(res.best.as_deref(), Some("mug_2"));
@@ -566,7 +566,7 @@ mod tests {
     use crate::query::Constraint;
 
     fn resolver() -> Resolver {
-        Resolver::new(Scene::from_json(include_str!("../../../examples/scenes/tabletop.json")).unwrap())
+        Resolver::new(Scene::from_json(include_str!("../tests/fixtures/tabletop.json")).unwrap())
     }
 
     fn best(q: Query) -> String {

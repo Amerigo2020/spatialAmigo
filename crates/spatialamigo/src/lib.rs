@@ -10,7 +10,7 @@
 //! ```
 //! use spatialamigo::{Resolver, Scene};
 //!
-//! let scene = Scene::from_json(include_str!("../../../examples/scenes/tabletop.json"))?;
+//! let scene = Scene::from_json(include_str!("../tests/fixtures/tabletop.json"))?;
 //! let resolver = Resolver::new(scene);
 //! let res = resolver.resolve_text("the mug closest to the laptop")?;
 //! assert_eq!(res.best.as_deref(), Some("mug_2"));
@@ -46,6 +46,6 @@ pub use relations::{Family, Frame, Params, Relation};
 pub use scene::{Scene, SceneObject, Viewpoint, SCENE_FORMAT_VERSION};
 
 /// Schema of the scene format v0.1 (JSON Schema draft 2020-12).
-pub const SCENE_SCHEMA: &str = include_str!("../../../schema/scene-v0.1.json");
+pub const SCENE_SCHEMA: &str = include_str!("../schema/scene-v0.1.json");
 /// Schema of the query format v0.1 (JSON Schema draft 2020-12).
-pub const QUERY_SCHEMA: &str = include_str!("../../../schema/query-v0.1.json");
+pub const QUERY_SCHEMA: &str = include_str!("../schema/query-v0.1.json");

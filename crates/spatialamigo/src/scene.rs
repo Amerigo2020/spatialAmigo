@@ -172,7 +172,7 @@ impl Default for Scene {
 mod tests {
     use super::*;
 
-    const TABLETOP: &str = include_str!("../../../examples/scenes/tabletop.json");
+    const TABLETOP: &str = include_str!("../tests/fixtures/tabletop.json");
 
     #[test]
     fn loads_tabletop_example() {

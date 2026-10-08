@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Amerigo2020/spatialAmigo/schema/query-v0.1.json",
+  "title": "spatialAmigo query v0.1",
+  "description": "A target class plus a conjunction (AND) of spatial constraints. Produced by the template parser, the LLM parser or by hand.",
+  "type": "object",
+  "required": ["target"],
+  "additionalProperties": false,
+  "properties": {
+    "target": {
+      "description": "Class label of the object to find, e.g. \"mug\".",
+      "type": "string",
+      "minLength": 1
+    },
+    "constraints": {
+      "description": "All constraints must hold (AND).",
+      "type": "array",
+      "items": { "$ref": "#/$defs/constraint" }
+    },
+    "candidates": {
+      "description": "Optional restriction of the candidate set to these object ids.",
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "$defs": {
+    "objectRef": {
+      "description": "Anchor reference: a label string, {\"label\": ...} or {\"id\": ...}.",
+      "oneOf": [
+        { "type": "string", "minLength": 1 },
+        {
+          "type": "object",
+          "required": ["label"],
+          "additionalProperties": false,
+          "properties": { "label": { "type": "string", "minLength": 1 } }
+        },
+        {
+          "type": "object",
+          "required": ["id"],
+          "additionalProperties": false,
+          "properties": { "id": { "type": "string", "minLength": 1 } }
+        }
+      ]
+    },
+    "constraint": {
+      "type": "object",
+      "required": ["relation", "anchors"],
+      "additionalProperties": false,
+      "properties": {
+        "relation": {
+          "enum": ["closest", "farthest", "between", "above", "below", "on", "under", "left", "right", "front", "behind"]
+        },
+        "anchors": {
+          "description": "Exactly one anchor, or two for \"between\".",
+          "type": "array",
+          "items": { "$ref": "#/$defs/objectRef" },
+          "minItems": 1,
+          "maxItems": 2
+        },
+        "frame": {
+          "description": "Reference frame for left/right/front/behind. auto: allocentric if the anchor has a front, else egocentric.",
+          "enum": ["auto", "allocentric", "egocentric"],
+          "default": "auto"
+        }
+      },
+      "if": { "properties": { "relation": { "const": "between" } } },
+      "then": { "properties": { "anchors": { "minItems": 2 } } },
+      "else": { "properties": { "anchors": { "maxItems": 1 } } }
+    }
+  }
+}

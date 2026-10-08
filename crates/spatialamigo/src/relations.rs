@@ -497,7 +497,7 @@ mod tests {
     use super::*;
     use crate::scene::Scene;
 
-    const TABLETOP: &str = include_str!("../../../examples/scenes/tabletop.json");
+    const TABLETOP: &str = include_str!("../tests/fixtures/tabletop.json");
 
     fn boxes() -> (Scene, impl Fn(&str) -> Obb) {
         let s = Scene::from_json(TABLETOP).unwrap();

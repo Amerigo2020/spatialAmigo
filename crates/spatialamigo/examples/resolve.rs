@@ -7,7 +7,7 @@
 
 use spatialamigo::{Resolver, Scene};
 
-const DEFAULT_SCENE: &str = include_str!("../../../examples/scenes/tabletop.json");
+const DEFAULT_SCENE: &str = include_str!("../tests/fixtures/tabletop.json");
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args: Vec<String> = std::env::args().skip(1).collect();

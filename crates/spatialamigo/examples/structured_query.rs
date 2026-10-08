@@ -8,7 +8,7 @@
 use spatialamigo::{Constraint, Frame, Query, Relation, Resolver, Scene};
 
 fn main() -> Result<(), spatialamigo::Error> {
-    let scene = Scene::from_json(include_str!("../../../examples/scenes/tabletop.json"))?;
+    let scene = Scene::from_json(include_str!("../tests/fixtures/tabletop.json"))?;
     let resolver = Resolver::new(scene);
 
     // "the mug that is on the table and, seen from the chair, on its left"
