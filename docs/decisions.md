@@ -90,5 +90,6 @@ Decisions taken while building spatialAmigo autonomously. Each entry states the 
 
 ## D11. Open items before a public release
 
-* `include_str!` in the core crate reads the schemas from the repository root. Before publishing to crates.io the schemas must be copied into the crate (or the paths changed), because `cargo package` only includes files inside the crate directory.
+* Resolved: the core crate ships its own copies of `schema/*.json` (in `crates/spatialamigo/schema/`) and of the tabletop scene used by unit tests, doctests and examples (in `crates/spatialamigo/tests/fixtures/`). `schema/` and `examples/scenes/` at the repository root stay the single source of truth; `tests/vendored_files.rs` fails if a copy is not byte-identical to its original (and is a no-op inside the packaged crate). Copies were chosen over a `build.rs` or symlinks because symlinks break on Windows checkouts and a build script would still need the files inside the package. `cargo package -p spatialamigo` builds with verification, and the Python sdist (`uvx maturin sdist`) installs in a fresh venv and passes the full pytest suite.
+* The MSRV of 1.82 was claimed but not tested. A toolchain older than current stable failed to infer types in `spatialamigo-eval`; CI now runs `cargo check` with Rust 1.82.
 * Python package metadata (classifiers, long description) is ready, but no wheel is uploaded. Publishing to crates.io, PyPI or npm, creating releases and changing repository visibility are left to Amerigo.
