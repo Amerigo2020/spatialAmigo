@@ -27,3 +27,4 @@ eval/sr3d/out/
 crates/spatialamigo-wasm/pkg-node/
 results/**/samples.jsonl
 data/
+*.pdb
