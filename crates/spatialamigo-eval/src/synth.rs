@@ -393,7 +393,7 @@ pub fn paraphrase(rng: &mut Rng, s: &Sample) -> (&'static str, String) {
         anchors.get(1).map(String::as_str),
     );
     if s.family == Family::Egocentric {
-        out.push_str(rng.choose(&[
+        out.push_str(rng.choose::<&str>(&[
             "",
             " from my point of view",
             " from the camera",
@@ -500,9 +500,9 @@ const FLOOR_ANCHORS: &[&str] = &["table", "desk", "bed", "sofa", "tv", "cabinet"
 fn proximity(rng: &mut Rng, rel: Relation) -> Option<Sample> {
     let mut b = Builder::default();
     let anchors: Vec<&str> = FLOOR_ANCHORS.iter().copied().filter(|l| *l != "door").collect();
-    let ak = kind(rng.choose(&anchors));
+    let ak = kind(rng.choose::<&str>(&anchors));
     let tk = kind(
-        rng.choose(
+        rng.choose::<&str>(
             &FLOOR_TARGETS
                 .iter()
                 .copied()
@@ -532,7 +532,7 @@ fn proximity(rng: &mut Rng, rel: Relation) -> Option<Sample> {
     }
     let k = rng.int(0, 3);
     b.clutter(rng, k, &[ak.label, tk.label]);
-    let sentence = fill(rng.choose(templates(rel)), tk.label, ak.label, None);
+    let sentence = fill(rng.choose::<&str>(templates(rel)), tk.label, ak.label, None);
     finish(
         Partial {
             b,
@@ -557,7 +557,7 @@ fn between(rng: &mut Rng) -> Option<Sample> {
         ],
         2,
     );
-    let tk = kind(rng.choose(&["box", "plant", "trash can", "lamp", "chair", "nightstand"]));
+    let tk = kind(rng.choose::<&str>(&["box", "plant", "trash can", "lamp", "chair", "nightstand"]));
     let a = b.floor(rng, ks[0])?;
     let ang = rng.range(-PI, PI);
     let dist = rng.range(1.6, 3.0);
@@ -582,7 +582,7 @@ fn between(rng: &mut Rng) -> Option<Sample> {
     let k = rng.int(0, 2);
     b.clutter(rng, k, &[ks[0].label, ks[1].label, tk.label]);
     let sentence = fill(
-        rng.choose(templates(Relation::Between)),
+        rng.choose::<&str>(templates(Relation::Between)),
         tk.label,
         ks[0].label,
         Some(ks[1].label),
@@ -606,15 +606,15 @@ fn vertical(rng: &mut Rng, rel: Relation) -> Option<Sample> {
     let mut b = Builder::default();
     let (target, tk, ak) = if rel == Relation::Above {
         // Elevated target above floor furniture; distractors hang over other furniture or bare floor.
-        let ak = kind(rng.choose(&["bed", "sofa", "desk", "table", "cabinet", "nightstand"]));
-        let tk = kind(rng.choose(&["picture", "shelf", "clock"]));
+        let ak = kind(rng.choose::<&str>(&["bed", "sofa", "desk", "table", "cabinet", "nightstand"]));
+        let tk = kind(rng.choose::<&str>(&["picture", "shelf", "clock"]));
         let a = b.floor(rng, ak)?;
         let ab = b.boxes[a].clone();
         let z = ab.z().hi + rng.range(0.3, 0.9);
         let t = b.elevated_at(rng, tk, ab.center_xy(), z, ab.yaw)?;
         for _ in 0..rng.int(1, 2) {
             let other = kind(
-                rng.choose(
+                rng.choose::<&str>(
                     &["table", "desk", "bed", "sofa", "cabinet", "nightstand"]
                         .iter()
                         .copied()
@@ -635,8 +635,8 @@ fn vertical(rng: &mut Rng, rel: Relation) -> Option<Sample> {
         (t, tk, ak)
     } else {
         // Floor target below an elevated anchor; distractors stand elsewhere.
-        let ak = kind(rng.choose(&["shelf", "picture", "clock"]));
-        let tk = kind(rng.choose(&["box", "trash can", "plant", "chair", "nightstand"]));
+        let ak = kind(rng.choose::<&str>(&["shelf", "picture", "clock"]));
+        let tk = kind(rng.choose::<&str>(&["box", "trash can", "plant", "chair", "nightstand"]));
         let t = b.floor(rng, tk)?;
         let tb = b.boxes[t].clone();
         let z = tb.z().hi + rng.range(0.3, 0.8);
@@ -661,7 +661,7 @@ fn vertical(rng: &mut Rng, rel: Relation) -> Option<Sample> {
     }
     let k = rng.int(0, 2);
     b.clutter(rng, k, &[ak.label, tk.label]);
-    let sentence = fill(rng.choose(templates(rel)), tk.label, ak.label, None);
+    let sentence = fill(rng.choose::<&str>(templates(rel)), tk.label, ak.label, None);
     finish(
         Partial {
             b,
@@ -681,15 +681,15 @@ fn support(rng: &mut Rng, rel: Relation) -> Option<Sample> {
     let mut b = Builder::default();
     let surfaces = ["table", "desk", "cabinet", "nightstand"];
     let (target, tk, ak) = if rel == Relation::On {
-        let ak = kind(rng.choose(&surfaces));
-        let tk = kind(rng.choose(&["mug", "book", "bowl", "bottle", "laptop"]));
+        let ak = kind(rng.choose::<&str>(&surfaces));
+        let tk = kind(rng.choose::<&str>(&["mug", "book", "bowl", "bottle", "laptop"]));
         let a = b.floor(rng, ak)?;
         let t = b.on_top(rng, tk, a)?;
         for _ in 0..rng.int(1, 3) {
             let other: Vec<&str> = surfaces.iter().copied().filter(|l| *l != ak.label).collect();
             let r = rng.f64();
             let d = if r < 0.4 {
-                let ok = kind(rng.choose(&other));
+                let ok = kind(rng.choose::<&str>(&other));
                 let o = b.floor(rng, ok)?;
                 b.on_top(rng, tk, o)?
             } else if r < 0.7 {
@@ -713,8 +713,8 @@ fn support(rng: &mut Rng, rel: Relation) -> Option<Sample> {
         (t, tk, ak)
     } else {
         // "the table under the laptop": several tables, only one carries the anchor.
-        let tk = kind(rng.choose(&surfaces));
-        let ak = kind(rng.choose(&["laptop", "monitor", "mug", "book", "bowl", "bottle"]));
+        let tk = kind(rng.choose::<&str>(&surfaces));
+        let ak = kind(rng.choose::<&str>(&["laptop", "monitor", "mug", "book", "bowl", "bottle"]));
         let t = b.floor(rng, tk)?;
         b.on_top(rng, ak, t)?;
         let others: Vec<&str> = ["mug", "book", "bowl", "bottle", "laptop", "monitor"]
@@ -725,7 +725,7 @@ fn support(rng: &mut Rng, rel: Relation) -> Option<Sample> {
         for _ in 0..rng.int(1, 2) {
             let d = b.floor(rng, tk)?;
             if rng.chance(0.6) {
-                let ok = kind(rng.choose(&others));
+                let ok = kind(rng.choose::<&str>(&others));
                 b.on_top(rng, ok, d)?;
             }
         }
@@ -733,7 +733,7 @@ fn support(rng: &mut Rng, rel: Relation) -> Option<Sample> {
     };
     let k = rng.int(0, 2);
     b.clutter(rng, k, &[ak.label, tk.label]);
-    let sentence = fill(rng.choose(templates(rel)), tk.label, ak.label, None);
+    let sentence = fill(rng.choose::<&str>(templates(rel)), tk.label, ak.label, None);
     finish(
         Partial {
             b,
@@ -771,16 +771,16 @@ fn directional(rng: &mut Rng, rel: Relation, family: Family) -> Option<Sample> {
     let mut b = Builder::default();
     let ego = family == Family::Egocentric;
     let ak = if ego {
-        kind(rng.choose(&["table", "desk", "nightstand", "box", "plant", "trash can"]))
+        kind(rng.choose::<&str>(&["table", "desk", "nightstand", "box", "plant", "trash can"]))
     } else {
-        kind(rng.choose(&["chair", "sofa", "bed", "armchair", "tv", "cabinet"]))
+        kind(rng.choose::<&str>(&["chair", "sofa", "bed", "armchair", "tv", "cabinet"]))
     };
     let tpool: Vec<&str> = ["box", "plant", "trash can", "lamp", "nightstand", "chair"]
         .iter()
         .copied()
         .filter(|l| *l != ak.label)
         .collect();
-    let tk = kind(rng.choose(&tpool));
+    let tk = kind(rng.choose::<&str>(&tpool));
     let xy = Vec2::new(rng.range(-0.8, 0.8), rng.range(-0.8, 0.8));
     let a = b.floor_at(rng, ak, xy)?;
     let ab = b.boxes[a].clone();
@@ -821,7 +821,7 @@ fn directional(rng: &mut Rng, rel: Relation, family: Family) -> Option<Sample> {
     }
     let k = rng.int(0, 2);
     b.clutter(rng, k, &[ak.label, tk.label]);
-    let mut sentence = fill(rng.choose(templates(rel)), tk.label, ak.label, None);
+    let mut sentence = fill(rng.choose::<&str>(templates(rel)), tk.label, ak.label, None);
     let frame = if ego {
         let suffix = *rng.choose(&[
             "",

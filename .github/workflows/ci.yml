@@ -44,6 +44,16 @@ jobs:
             cargo run -q -p spatialamigo --example "$ex"
           done
 
+  msrv:
+    name: MSRV (1.82)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@1.82
+      - uses: Swatinem/rust-cache@v2
+      - name: cargo check
+        run: cargo check -p spatialamigo -p spatialamigo-eval
+
   python:
     name: Python (wheel + pytest)
     runs-on: ${{ matrix.os }}
