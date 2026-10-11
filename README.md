@@ -10,7 +10,7 @@
 
 ![spatialAmigo web demo: the trace explains why plant_1 is "the plant to the right of the tv"](docs/media/demo.gif)
 
-Rust core, Python bindings (PyO3), WebAssembly demo (three.js). Relation families follow Sr3D from ReferIt3D (ECCV 2020), extended by an egocentric frame for robots with a camera.
+**[Live demo](https://amerigo2020.github.io/spatialAmigo/)** · Rust core, Python bindings (PyO3), WebAssembly demo (three.js). Relation families follow Sr3D from ReferIt3D (ECCV 2020), extended by an egocentric frame for robots with a camera.
 
 ## Why
 
@@ -82,6 +82,8 @@ selected mug_2 with score 0.379 ...
 Both mugs are really in front of the chair, and the trace says so instead of pretending to be sure. More: `cargo run -p spatialamigo --example resolve -- examples/scenes/living_room.json "the plant to the right of the tv"` and `cargo run -p spatialamigo --example structured_query`.
 
 ### Web demo
+
+Live at https://amerigo2020.github.io/spatialAmigo/. To build it locally:
 
 ```bash
 scripts/build_web.sh                           # wasm-pack + three.js into web/dist
@@ -235,7 +237,7 @@ Honest reading:
 4. Batch scoring (structure-of-arrays, no trace) for very large candidate sets.
 5. Calibrate the softness parameters on Sr3D/Nr3D while keeping the predicates interpretable.
 6. A ROS 2 node that subscribes to a 3D detection topic, builds scenes on the fly and serves resolution requests.
-7. Publish the crate, the Python wheel and the web demo once the API settles.
+7. Publish the crate and the Python wheel once the API settles (checklist in [`docs/release.md`](docs/release.md)).
 
 ## Development
 
@@ -247,7 +249,7 @@ uv run pytest                                         # Python bindings, LLM par
 cargo bench -p spatialamigo --bench scoring           # then: python3 bench/criterion_table.py
 ```
 
-CI ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) runs fmt, clippy, tests, examples and docs, builds Python wheels on Linux, macOS and Windows and runs pytest on them, and builds the WASM package and web demo. [`.github/workflows/pages.yml`](.github/workflows/pages.yml) deploys the demo to GitHub Pages once it is enabled. Design decisions are logged in [`docs/decisions.md`](docs/decisions.md).
+CI ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) runs fmt, clippy, tests, examples and docs, builds Python wheels on Linux, macOS and Windows and runs pytest on them, and builds the WASM package and web demo. [`.github/workflows/pages.yml`](.github/workflows/pages.yml) deploys the demo to GitHub Pages. Design decisions are logged in [`docs/decisions.md`](docs/decisions.md).
 
 ## Citation
 

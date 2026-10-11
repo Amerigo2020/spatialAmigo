@@ -96,7 +96,9 @@ Decisions taken while building spatialAmigo autonomously. Each entry states the 
 
 * Resolved: the core crate ships its own copies of `schema/*.json` (in `crates/spatialamigo/schema/`) and of the tabletop scene used by unit tests, doctests and examples (in `crates/spatialamigo/tests/fixtures/`). `schema/` and `examples/scenes/` at the repository root stay the single source of truth; `tests/vendored_files.rs` fails if a copy is not byte-identical to its original (and is a no-op inside the packaged crate). Copies were chosen over a `build.rs` or symlinks because symlinks break on Windows checkouts and a build script would still need the files inside the package. `cargo package -p spatialamigo` builds with verification, and the Python sdist (`uvx maturin sdist`) installs in a fresh venv and passes the full pytest suite.
 * The MSRV of 1.82 was claimed but not tested. A toolchain older than current stable failed to infer types in `spatialamigo-eval`; CI now runs `cargo check` with Rust 1.82.
-* Python package metadata (classifiers, long description) is ready, but no wheel is uploaded. Publishing to crates.io, PyPI or npm, creating releases and changing repository visibility are left to Amerigo.
+* Python package metadata (classifiers, long description) is ready, but no wheel is uploaded. Publishing to crates.io, PyPI or npm and creating releases are left to Amerigo; `docs/release.md` lists the steps.
+* On 2026-10-12, with Amerigo's explicit approval, the repository was made public and GitHub Pages was enabled (source: GitHub Actions, variable `ENABLE_PAGES=true`). The demo runs at https://amerigo2020.github.io/spatialAmigo/.
+* The git remote uses HTTPS because the local SSH key belongs to a different GitHub account.
 
 ## D12. Object fronts for allocentric Sr3D rows
 
