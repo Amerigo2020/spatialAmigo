@@ -14,7 +14,7 @@ Nothing here has been run. Publishing is a manual decision by the maintainer.
 1. `cargo package -p spatialamigo --list` and check that `schema/` and `tests/fixtures/` are included (D11).
 2. `cargo publish -p spatialamigo --dry-run`.
 3. `cargo login` with a token scoped to publishing new crates, then `cargo publish -p spatialamigo`.
-4. `spatialamigo-eval`, `spatialamigo-py` and `spatialamigo-wasm` set `publish = false` or are simply not published; check before step 3 of a later release.
+4. `spatialamigo-eval`, `spatialamigo-py` and `spatialamigo-wasm` already set `publish = false`.
 
 ## PyPI (`spatialamigo`)
 
